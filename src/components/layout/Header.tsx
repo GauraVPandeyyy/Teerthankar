@@ -7,6 +7,7 @@ import { useWishlist } from '../../contexts/WishlistContext';
 import { Button } from '../ui/button';
 import { categories } from '../../data/categories';
 import LoginModal from '../auth/LoginModal';
+import logo from '../../assets/logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,11 +32,17 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to="/" className="font-serif text-2xl md:text-3xl font-bold">
+            <Link to="/" className="font-serif hidden lg:flex text-2xl md:text-3xl font-bold">
               <span className="bg-gradient-gold bg-clip-text text-transparent">
                 Theerthankar 
               </span>
-              <span className="text-foreground">{" "}Jewels</span>
+              <span className="text-foreground ps-2">Jewels</span>
+            </Link>
+            {/* logo img */}
+            <Link to="/" className="font-serif lg:hidden w-12 flex items-center">
+            
+              <img src={logo} alt="logo"  className="bg-gradient-gold bg-clip-text text-transparent" />
+              
             </Link>
 
             {/* Desktop Navigation */}
