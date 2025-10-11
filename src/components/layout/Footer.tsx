@@ -9,8 +9,8 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h3 className="font-serif text-2xl font-bold mb-4">
-              <span className="bg-gradient-gold bg-clip-text text-transparent">Luxe</span>
-              <span className="text-secondary-foreground">Jewels</span>
+              <span className="bg-gradient-gold bg-clip-text text-transparent">Theerthankar </span>
+              <span className="text-secondary-foreground">{" "}Jewels</span>
             </h3>
             <p className="text-secondary-foreground/80 mb-4">
               Your destination for exquisite artificial jewelry. Elegance that doesn't break the bank.
@@ -101,7 +101,7 @@ const Footer = () => {
               <li className="flex items-center space-x-2">
                 <Mail className="w-5 h-5 flex-shrink-0" />
                 <span className="text-secondary-foreground/80">
-                  support@luxejewels.com
+                  support@theerthankarjewels.com
                 </span>
               </li>
             </ul>
@@ -109,7 +109,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-secondary-foreground/20 mt-8 pt-8 text-center text-sm text-secondary-foreground/60">
-          <p>&copy; 2024 Luxe Jewels. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()}  Theerthankar Jewels. All rights reserved.</p>
         </div>
       </div>
     </footer>

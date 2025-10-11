@@ -40,7 +40,7 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/category/wedding-collection">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary">
+                <Button size="lg" variant="outline" className="border-white text-black hover:bg-white/80 hover:text-secondary">
                   Wedding Collection
                 </Button>
               </Link>

@@ -33,9 +33,9 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="font-serif text-2xl md:text-3xl font-bold">
               <span className="bg-gradient-gold bg-clip-text text-transparent">
-                Luxe
+                Theerthankar 
               </span>
-              <span className="text-foreground">Jewels</span>
+              <span className="text-foreground">{" "}Jewels</span>
             </Link>
 
             {/* Desktop Navigation */}
