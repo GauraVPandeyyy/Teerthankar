@@ -108,7 +108,7 @@ const ProductCard = ({ product, featured = false }) => {
             </div>
           </div>
 
-          {product.rating && (
+          {/* {product.rating && (
             <div className="flex items-center gap-2 mt-2 text-sm">
               <div className="flex items-center gap-1 text-primary">
                 <span>★</span>
@@ -118,7 +118,7 @@ const ProductCard = ({ product, featured = false }) => {
                 ({product.reviews} reviews)
               </span>
             </div>
-          )}
+          )} */}
         </div>
       </Card>
     </Link>

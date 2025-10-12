@@ -49,9 +49,9 @@ const Index = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <Sparkles className="w-6 h-6 text-white" />
-        </div>
+        </div> */}
       </section>
 
       {/* Categories Section - PROMINENT PLACEMENT */}
@@ -66,7 +66,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
             {featuredCategories.map((category, index) => (
               <div 
                 key={category.id}
@@ -101,7 +101,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
             {featuredProducts.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} featured />
             ))}
@@ -160,11 +160,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Link to="/category/wedding-collection" className="group">
-              <div className="relative h-96 rounded-lg overflow-hidden">
+              <div className="relative h-72 md:h-80 rounded-lg overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80"
                   alt="Wedding Collection"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover object-[60%] group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20" />
                 <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
@@ -179,7 +179,7 @@ const Index = () => {
             </Link>
 
             <Link to="/category/party-wear" className="group">
-              <div className="relative h-96 rounded-lg overflow-hidden">
+              <div className="relative h-72 md:h-80 rounded-lg overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=800&q=80"
                   alt="Party Wear"
