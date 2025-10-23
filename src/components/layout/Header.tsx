@@ -34,7 +34,7 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="font-serif hidden lg:flex text-2xl md:text-3xl font-bold">
               <span className="bg-gradient-gold bg-clip-text text-transparent">
-                Theerthankar 
+                Teerthankar 
               </span>
               <span className="text-foreground ps-2">Jewels</span>
             </Link>
@@ -99,7 +99,7 @@ const Header = () => {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Link to="/search">
                 <Button variant="ghost" size="icon">
                   <Search className="w-5 h-5" />

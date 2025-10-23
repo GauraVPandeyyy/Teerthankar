@@ -1,31 +1,73 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { products as allProducts } from '../data/products';
-import { categories as allCategories } from '../data/categories';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { products as allProducts, Product } from '../data/products';
+import { categories as allCategories, Category, Subcategory } from '../data/categories';
 
-const ProductContext = createContext(null);
+// Define TypeScript interfaces
+interface Filters {
+  category: string | null;
+  priceRange: [number, number];
+  metalType: string | null;
+  search: string;
+  sortBy: 'featured' | 'price-asc' | 'price-desc' | 'newest';
+}
 
-export const useProducts = () => {
-  const context = useContext(ProductContext);
-  if (!context) {
-    throw new Error('useProducts must be used within ProductProvider');
-  }
-  return context;
-};
+interface ProductContextType {
+  products: Product[];
+  categories: Category[];
+  filters: Filters;
+  isLoading: boolean;
+  updateFilters: (newFilters: Partial<Filters>) => void;
+  resetFilters: () => void;
+  getProductById: (id: string) => Product | undefined;
+  getProductsByCategory: (categoryId: string) => Product[];
+  getProductsBySubcategory: (categoryId: string, subcategoryId: string) => Product[];
+  getSubcategories: (categoryId: string) => Subcategory[];
+  getFeaturedProducts: () => Product[];
+  allProducts: Product[];
+}
 
-export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState(allProducts);
-  const [categories] = useState(allCategories);
-  const [filters, setFilters] = useState({
+const ProductContext = createContext<ProductContextType | undefined>(undefined);
+
+interface ProductProviderProps {
+  children: ReactNode;
+}
+
+export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
+  const [products, setProducts] = useState<Product[]>(allProducts);
+  const [categories] = useState<Category[]>(allCategories);
+  const [filters, setFilters] = useState<Filters>({
     category: null,
     priceRange: [0, 10000],
     metalType: null,
     search: '',
-    sortBy: 'featured' // featured, price-asc, price-desc, newest
+    sortBy: 'featured'
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Filter and sort products based on current filters
-  const getFilteredProducts = () => {
+  // NEW: Get subcategories for a category
+  const getSubcategories = (categoryId: string): Subcategory[] => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category?.subcategories || [];
+  };
+
+  // NEW: Get products by subcategory
+  const getProductsBySubcategory = (categoryId: string, subcategoryId: string): Product[] => {
+    return allProducts.filter(product => 
+      product.category === categoryId && product.subcategory === subcategoryId
+    );
+  };
+
+  // UPDATED: Enhanced getProductsByCategory to work with or without subcategories
+  const getProductsByCategory = (categoryId: string): Product[] => {
+    return allProducts.filter(
+      (product) =>
+        product.category === categoryId ||
+        product.collections?.includes(categoryId)
+    );
+  };
+
+  // Keep all your existing filtering logic (unchanged)
+  const getFilteredProducts = (): Product[] => {
     let filtered = [...allProducts];
 
     // Search filter
@@ -90,11 +132,11 @@ export const ProductProvider = ({ children }) => {
     }, 300);
   }, [filters]);
 
-  const updateFilters = (newFilters) => {
+  const updateFilters = (newFilters: Partial<Filters>): void => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  const resetFilters = () => {
+  const resetFilters = (): void => {
     setFilters({
       category: null,
       priceRange: [0, 10000],
@@ -104,23 +146,15 @@ export const ProductProvider = ({ children }) => {
     });
   };
 
-  const getProductById = (id) => {
+  const getProductById = (id: string): Product | undefined => {
     return allProducts.find((product) => product.id === id);
   };
 
-  const getProductsByCategory = (categoryId) => {
-    return allProducts.filter(
-      (product) =>
-        product.category === categoryId ||
-        product.collections?.includes(categoryId)
-    );
-  };
-
-  const getFeaturedProducts = () => {
+  const getFeaturedProducts = (): Product[] => {
     return allProducts.filter((product) => product.featured);
   };
 
-  const value = {
+  const value: ProductContextType = {
     products,
     categories,
     filters,
@@ -129,9 +163,23 @@ export const ProductProvider = ({ children }) => {
     resetFilters,
     getProductById,
     getProductsByCategory,
+    getProductsBySubcategory, // NEW
+    getSubcategories, // NEW
     getFeaturedProducts,
     allProducts
   };
 
-  return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
+  return (
+    <ProductContext.Provider value={value}>
+      {children}
+    </ProductContext.Provider>
+  );
+};
+
+export const useProducts = (): ProductContextType => {
+  const context = useContext(ProductContext);
+  if (!context) {
+    throw new Error('useProducts must be used within ProductProvider');
+  }
+  return context;
 };

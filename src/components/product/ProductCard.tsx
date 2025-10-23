@@ -46,12 +46,12 @@ const ProductCard = ({ product, featured = false }) => {
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-2">
             {discount > 0 && (
-              <span className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-xs font-medium">
+              <span className="bg-destructive text-destructive-foreground px-[6px] py-[3px] rounded text-[0.65rem] font-medium">
                 {discount}% OFF
               </span>
             )}
             {product.featured && (
-              <span className="bg-gradient-gold text-white px-2 py-1 rounded text-xs font-medium">
+              <span className="bg-gradient-gold text-white px-[6px] py-[3px] rounded text-[0.65rem] font-medium">
                 Featured
               </span>
             )}
@@ -88,16 +88,16 @@ const ProductCard = ({ product, featured = false }) => {
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
+        <div className="px-2 py-1">
+          <h3 className="font-medium text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
             {product.name}
           </h3>
           
-          <p className="text-sm text-muted-foreground mb-2">{product.metalType}</p>
+          <p className="text-xs text-muted-foreground mb-2">{product.metalType}</p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-foreground">
+              <span className="text-base font-bold text-foreground">
                 ₹{product.price.toLocaleString()}
               </span>
               {product.originalPrice && (

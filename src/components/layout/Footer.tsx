@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h3 className="font-serif text-2xl font-bold mb-4">
-              <span className="bg-gradient-gold bg-clip-text text-transparent">Theerthankar </span>
+              <span className="bg-gradient-gold bg-clip-text text-transparent">Teerthankar </span>
               <span className="text-secondary-foreground">{" "}Jewels</span>
             </h3>
             <p className="text-secondary-foreground/80 mb-4">
