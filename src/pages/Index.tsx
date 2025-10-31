@@ -107,7 +107,7 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen min-w-full bg-gradient-to-b from-slate-50 via-white to-rose-50/50">
       {/* Premium Hero Carousel Section */}
       <section className="relative h-[65vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         {/* Background Slides */}
@@ -344,7 +344,7 @@ const Index: React.FC = () => {
               <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-l from-slate-200/20 to-blue-200/20 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12">
+            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12">
               {featuredCategories.map((category, index) => (
                 <motion.div
                   key={category.id}
@@ -389,7 +389,7 @@ const Index: React.FC = () => {
               </Link>
               
               <p className="text-sm text-slate-500 mt-4">
-                ✨ 2000+ premium designs • 🚀 Free shipping • 💎 Lifetime warranty
+                ✨ 2000+ premium designs • 🚀 Free shipping 
               </p>
             </motion.div>
           </motion.div>
@@ -597,7 +597,7 @@ const Index: React.FC = () => {
                     </div>
 
                     {/* Glassmorphism Border */}
-                    <div className="absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-br from-white/20 to-white/10 bg-clip-padding backdrop-filter backdrop-blur-sm group-hover:from-white/30 group-hover:to-white/20 transition-all duration-500"></div>
+                    <div className="absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-br from-white/20 to-white/10 group-hover:from-white/30 group-hover:to-white/20 transition-all duration-500"></div>
                   </div>
                 </Link>
               </motion.div>

@@ -64,7 +64,34 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  /* Use Inter for all body / UI text */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Use Playfair Display for main headings to create strong visual identity */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6{
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* @apply font-serif; */
+
+  /* Ensure buttons, captions, nav-links inherit body font (Inter) */
+  button,
+  input,
+  textarea,
+  select,
+  nav,p,
+  .caption {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
   }
 }

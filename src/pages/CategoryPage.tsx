@@ -195,7 +195,7 @@ const CategoryPage: React.FC = () => {
               </div>
 
               {/* Filter Button */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
@@ -208,7 +208,7 @@ const CategoryPage: React.FC = () => {
                   <Filter className="w-4 h-4 mr-2" />
                   Filter
                 </Button>
-              </motion.div>
+              </motion.div> */}
             </div>
           </div>
         </motion.section>

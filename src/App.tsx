@@ -32,9 +32,9 @@ const App = () => (
           <ProductProvider>
             <CartProvider>
               <WishlistProvider>
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col overflow-hidden">
                   <Header />
-                  <main className="flex-1">
+                  <main className="flex-1 pe-0">
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/shop" element={<Shop />} />

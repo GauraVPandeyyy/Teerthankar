@@ -116,10 +116,10 @@ const Header = () => {
                       <Crown className="w-4 h-4 text-amber-300" />
                       <span>Premium Quality</span>
                     </div>
-                    <div className="hidden lg:flex items-center gap-2">
+                    {/* <div className="hidden lg:flex items-center gap-2">
                       <Gem className="w-4 h-4 text-amber-300" />
                       <span>Lifetime Warranty</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -143,7 +143,7 @@ const Header = () => {
                     <Gem className="w-6 h-6 text-white" />
                   </div>
                   {/* Shine Effect */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                  <div className="hidden xl:flex absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 </div>
 
                 {/* Brand Text */}
@@ -216,14 +216,14 @@ const Header = () => {
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       // className="absolute top-full left-1/2 -translate-x-1/2 mt-6 w-screen max-w-6xl bg-white/95 backdrop-blur-2xl border border-slate-200/60 shadow-3xl rounded-3xl p-8"
-                      className="absolute top-[100%] right-[0%] -left-[300%] mt-6 w-screen max-w-6xl bg-white/95 backdrop-blur-2xl border border-slate-200/60 shadow-3xl rounded-3xl p-8"
+                      className="absolute top-[100%] right-[0%] -left-[350%] mt-6 w-screen max-w-6xl bg-white/95 backdrop-blur-2xl border border-slate-200/60 shadow-3xl rounded-3xl p-3"
                     >
-                      <div className="grid grid-cols-5 gap-4">
+                      <div className="grid grid-cols-5 gap-2">
                         {categories.map((category) => (
                           <Link
                             key={category.id}
                             to={`/category/${category.slug}`}
-                            className="group flex flex-col items-center text-center p-6 rounded-2xl hover:bg-gradient-to-br hover:from-amber-50/50 hover:to-rose-50/50 transition-all duration-500 border border-transparent hover:border-amber-200/50"
+                            className="group flex flex-col items-center text-center p-3 rounded-2xl hover:bg-gradient-to-br hover:from-amber-50/50 hover:to-rose-50/50 transition-all duration-500 border border-transparent hover:border-amber-200/50"
                           >
                             <div className="relative w-20 h-20 rounded-2xl overflow-hidden mb-4 border-2 border-slate-200 group-hover:border-amber-300 group-hover:scale-110 transition-all duration-500 shadow-lg">
                               <img 
@@ -259,7 +259,7 @@ const Header = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
               </Link>
 
-              <Link
+              {/* <Link
                 to="/about"
                 className={`relative font-medium text-lg transition-all duration-300 group ${
                   isScrolled
@@ -269,7 +269,7 @@ const Header = () => {
               >
                 Our Story
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
-              </Link>
+              </Link> */}
 
               <Link
                 to="/contact"
@@ -302,7 +302,7 @@ const Header = () => {
                     }`}
                   >
                     <Search className="w-5 h-5" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 </Link>
               </motion.div>
@@ -315,14 +315,14 @@ const Header = () => {
                 <Link to="/wishlist" className="relative">
                   <Button
                     variant="ghost"
-                    size="lg"
-                    className={`rounded-2xl bg-red-500 py-0 m-0 text-4xl font-extrabold text-yellow-700 transition-all duration-300 group relative overflow-hidden ${
+                    size="icon"
+                    className={`rounded-2xl text-4xl font-extrabold text-yellow-700 transition-all duration-300 group relative overflow-hidden ${
                       isScrolled
                         ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                         : "text-white hover:text-amber-200 hover:bg-white/10"
                     }`}
                   >
-                    <Heart className="w-24 h-24" />
+                    <Heart className="w-6 h-6" />
                     {wishlistCount > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
@@ -332,7 +332,7 @@ const Header = () => {
                         {wishlistCount}
                       </motion.span>
                     )}
-                    {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" /> */}
+                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 </Link>
               </motion.div>
@@ -357,12 +357,12 @@ const Header = () => {
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-lg border border-white"
+                        className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg border border-white"
                       >
                         {cartCount}
                       </motion.span>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 </Link>
               </motion.div>
@@ -399,7 +399,7 @@ const Header = () => {
                     }`}
                   >
                     <User className="w-5 h-5" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   </Button>
                 )}
               </motion.div>
@@ -424,7 +424,7 @@ const Header = () => {
                   ) : (
                     <Menu className="w-6 h-6" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 </Button>
               </motion.div>
             </div>
@@ -520,7 +520,7 @@ const Header = () => {
                     </div>
                   </div>
 
-                  {["Shop All", "Our Story", "Contact"].map((item) => (
+                  {["Shop All", "Contact"].map((item) => (
                     <Link
                       key={item}
                       to={`/${item.toLowerCase().replace(" ", "-")}`}
@@ -539,7 +539,7 @@ const Header = () => {
       </motion.header>
 
       {/* Spacer for fixed header */}
-      <div className="h-20" />
+      <div className="h-28" />
 
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </>

@@ -58,7 +58,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <div className="absolute inset-0 flex flex-col justify-between p-4 text-white">
               {/* Top Badge */}
               {category.featured && (
-                <div className="flex justify-end">
+                <div className="hidden xl:flex justify-end">
                   <motion.div 
                     className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30"
                     whileHover={{ scale: 1.05 }}
@@ -96,7 +96,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 </div>
 
                 {/* Description */}
-                <p className={`text-white/90 leading-relaxed ${isLarge ? "text-sm" : "text-xs"} line-clamp-2`}>
+                          
+                {/* <p className={`text-white/90 leading-relaxed ${isLarge ? "text-sm" : "text-xs"} line-clamp-2`}>
+                  {category.description}
+                </p> */}
+                <p className={`hidden xl:flex text-white/90 leading-relaxed ${isLarge ? "text-sm" : "text-xs"} line-clamp-2`}>
                   {category.description}
                 </p>
 
@@ -117,7 +121,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             </div>
 
             {/* Glassmorphism Border Effect */}
-            <div className="absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-br from-white/30 to-white/10 bg-clip-padding backdrop-filter backdrop-blur-sm"></div>
+            <div className="absolute inset-0 rounded-3xl border-2 border-transparent "></div>
+            {/* <div className="absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-br from-white/30 to-white/10 bg-clip-padding "></div> */}
           </div>
         </Card>
       </Link>
