@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Sparkles, Heart } from 'lucide-react';
-import { motion, Variants } from 'framer-motion';
+import { motion , Variants} from 'framer-motion';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -18,7 +18,7 @@ const Footer = () => {
     }
   };
 
-  const itemVariants: Variants = {
+  const itemVariants : Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -26,6 +26,36 @@ const Footer = () => {
       transition: { duration: 0.6 }
     }
   };
+
+  // Social media links with proper keys
+  const socialLinks = [
+    { Icon: Instagram, href: "#", color: "hover:text-pink-400", key: "instagram" },
+    { Icon: Facebook, href: "#", color: "hover:text-blue-400", key: "facebook" },
+    { Icon: Twitter, href: "#", color: "hover:text-sky-400", key: "twitter" },
+  ];
+
+  // Quick links with proper keys
+  const exploreLinks = [
+    { name: "About Us", path: "/about", key: "about" },
+    { name: "Shop All", path: "/shop", key: "shop-all" },
+    { name: "New Arrivals", path: "/shop?filter=new", key: "new-arrivals" },
+    { name: "Best Sellers", path: "/shop?filter=bestsellers", key: "best-sellers" },
+    { name: "Wedding Collection", path: "/category/wedding-collection", key: "wedding" },
+  ];
+
+  const supportLinks = [
+    { name: "Shipping Info", path: "/shipping", key: "shipping" },
+    { name: "Returns & Exchange", path: "/returns", key: "returns" },
+    { name: "Track Order", path: "/track-order", key: "track-order" },
+    { name: "Size Guide", path: "/size-guide", key: "size-guide" },
+    { name: "Care Instructions", path: "/care", key: "care" },
+  ];
+
+  const policyLinks = [
+    { name: "Privacy Policy", path: "/privacy", key: "privacy" },
+    { name: "Terms of Service", path: "/terms", key: "terms" },
+    { name: "Sitemap", path: "/sitemap", key: "sitemap" },
+  ];
 
   return (
     <motion.footer 
@@ -90,13 +120,9 @@ const Footer = () => {
             </p>
             
             <div className="flex space-x-4">
-              {[
-                { Icon: Instagram, href: "#", color: "hover:text-pink-400" },
-                { Icon: Facebook, href: "#", color: "hover:text-blue-400" },
-                { Icon: Twitter, href: "#", color: "hover:text-sky-400" },
-              ].map((social, index) => (
+              {socialLinks.map((social) => (
                 <motion.a
-                  key={social.Icon.name}
+                  key={social.key}
                   href={social.href}
                   className={`w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-slate-300 transition-all duration-300 ${social.color} hover:scale-110 hover:bg-white/20`}
                   whileHover={{ scale: 1.1 }}
@@ -112,14 +138,8 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <h4 className="font-serif text-xl font-semibold mb-6 text-white">Explore</h4>
             <ul className="space-y-3">
-              {[
-                { name: "About Us", path: "/about" },
-                { name: "Shop All", path: "/shop" },
-                { name: "New Arrivals", path: "/shop?filter=new" },
-                { name: "Best Sellers", path: "/shop?filter=bestsellers" },
-                { name: "Wedding Collection", path: "/category/wedding-collection" },
-              ].map((link) => (
-                <li key={link.name}>
+              {exploreLinks.map((link) => (
+                <li key={link.key}>
                   <Link 
                     to={link.path} 
                     className="text-slate-300 hover:text-amber-300 transition-colors duration-300 flex items-center gap-2 group"
@@ -136,14 +156,8 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <h4 className="font-serif text-xl font-semibold mb-6 text-white">Support</h4>
             <ul className="space-y-3">
-              {[
-                { name: "Shipping Info", path: "/shipping" },
-                { name: "Returns & Exchange", path: "/returns" },
-                { name: "Track Order", path: "/track-order" },
-                { name: "Size Guide", path: "/size-guide" },
-                { name: "Care Instructions", path: "/care" },
-              ].map((link) => (
-                <li key={link.name}>
+              {supportLinks.map((link) => (
+                <li key={link.key}>
                   <Link 
                     to={link.path} 
                     className="text-slate-300 hover:text-amber-300 transition-colors duration-300 flex items-center gap-2 group"
@@ -213,15 +227,11 @@ const Footer = () => {
           </p>
           
           <div className="flex items-center gap-6 text-sm text-slate-400">
-            <Link to="/privacy" className="hover:text-amber-300 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-amber-300 transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/sitemap" className="hover:text-amber-300 transition-colors">
-              Sitemap
-            </Link>
+            {policyLinks.map((link) => (
+              <Link key={link.key} to={link.path} className="hover:text-amber-300 transition-colors">
+                {link.name}
+              </Link>
+            ))}
           </div>
         </motion.div>
       </div>

@@ -9,17 +9,24 @@ import {
   ChevronLeft,
   ChevronRight,
   Play,
-  Pause
+  Pause,
+  RefreshCw
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import ProductCard from "../components/product/ProductCard";
 import CategoryCard from "../components/product/CategoryCard";
 import { useProducts } from "../contexts/ProductContext";
-import { categories } from "../data/categories";
-import { motion, AnimatePresence ,Variants } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 const Index: React.FC = () => {
-  const { getFeaturedProducts } = useProducts();
+  const { 
+    categories, 
+    getFeaturedProducts, 
+    isLoading, 
+    isError, 
+    refetchData 
+  } = useProducts();
+  
   const featuredProducts = getFeaturedProducts();
   const featuredCategories = categories.filter((cat) => cat.featured);
   
@@ -46,7 +53,7 @@ const Index: React.FC = () => {
       primaryButton: "New Arrivals",
       primaryLink: "/shop?sort=newest",
       secondaryButton: "Necklaces",
-      secondaryLink: "/category/necklaces-pendants",
+      secondaryLink: "/category/necklaces",
       overlay: "from-purple-900/70 to-pink-900/30"
     },
     {
@@ -84,7 +91,7 @@ const Index: React.FC = () => {
     setCurrentSlide(index);
   };
 
-  const containerVariants:Variants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -94,7 +101,7 @@ const Index: React.FC = () => {
     }
   };
 
-  const itemVariants : Variants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
@@ -105,6 +112,39 @@ const Index: React.FC = () => {
       }
     }
   };
+
+  // Handle loading and error states
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-rose-50/30">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading beautiful jewelry...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-rose-50/30">
+        <div className="text-center">
+          <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <RefreshCw className="w-12 h-12 text-rose-500" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4 text-slate-800">Failed to Load</h1>
+          <p className="text-slate-600 mb-6">Unable to fetch data. Please try again.</p>
+          <Button 
+            onClick={refetchData}
+            className="bg-slate-800 hover:bg-slate-700 text-white"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen min-w-full bg-gradient-to-b from-slate-50 via-white to-rose-50/50">
@@ -271,15 +311,6 @@ const Index: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Scroll Indicator */}
-        {/* <motion.div 
-          className="absolute bottom-4 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Sparkles className="w-6 h-6 text-amber-300" />
-        </motion.div> */}
       </section>
 
       {/* Premium Categories Section */}
@@ -344,54 +375,62 @@ const Index: React.FC = () => {
               <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-l from-slate-200/20 to-blue-200/20 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12">
-              {featuredCategories.map((category, index) => (
-                <motion.div
-                  key={category.id}
-                  variants={itemVariants}
-                  whileHover={{ 
-                    y: -8,
-                    transition: { duration: 0.3, ease: "easeOut" }
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <CategoryCard 
-                    category={category} 
-                    priority={index < 4}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            {featuredCategories.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12">
+                  {featuredCategories.map((category, index) => (
+                    <motion.div
+                      key={category.id}
+                      variants={itemVariants}
+                      whileHover={{ 
+                        y: -8,
+                        transition: { duration: 0.3, ease: "easeOut" }
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <CategoryCard 
+                        category={category} 
+                        priority={index < 4}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
 
-            {/* CTA Section */}
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <Link to="/shop">
-                <Button 
-                  size="lg"
-                  className="group relative overflow-hidden bg-gradient-to-r from-slate-900 to-slate-700 hover:from-slate-800 hover:to-slate-600 text-white px-8 py-6 rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                {/* CTA Section */}
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.6 }}
+                  viewport={{ once: true }}
                 >
-                  <span className="relative z-10 flex items-center text-lg font-semibold">
-                    Explore All Collections
-                    <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </span>
+                  <Link to="/shop">
+                    <Button 
+                      size="lg"
+                      className="group relative overflow-hidden bg-gradient-to-r from-slate-900 to-slate-700 hover:from-slate-800 hover:to-slate-600 text-white px-8 py-6 rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <span className="relative z-10 flex items-center text-lg font-semibold">
+                        Explore All Collections
+                        <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      </span>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+                        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                      </div>
+                    </Button>
+                  </Link>
                   
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
-                    <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                  </div>
-                </Button>
-              </Link>
-              
-              <p className="text-sm text-slate-500 mt-4">
-                ✨ 2000+ premium designs • 🚀 Free shipping 
-              </p>
-            </motion.div>
+                  <p className="text-sm text-slate-500 mt-4">
+                    ✨ {featuredCategories.length}+ premium collections • 🚀 Free shipping 
+                  </p>
+                </motion.div>
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-slate-500">No featured categories available.</p>
+              </div>
+            )}
           </motion.div>
         </div>
       </section>

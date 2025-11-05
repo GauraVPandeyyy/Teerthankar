@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { products as allProducts, Product } from '../data/products';
-import { categories as allCategories, Category, Subcategory } from '../data/categories';
+import { api } from '../services/api';
+import { transformCategory, transformProduct } from '../services/dataTransformers';
+import { Category, Subcategory, Product } from '../data/categories';
 
 // Define TypeScript interfaces
 interface Filters {
@@ -16,6 +17,7 @@ interface ProductContextType {
   categories: Category[];
   filters: Filters;
   isLoading: boolean;
+  isError: boolean;
   updateFilters: (newFilters: Partial<Filters>) => void;
   resetFilters: () => void;
   getProductById: (id: string) => Product | undefined;
@@ -24,6 +26,7 @@ interface ProductContextType {
   getSubcategories: (categoryId: string) => Subcategory[];
   getFeaturedProducts: () => Product[];
   allProducts: Product[];
+  refetchData: () => Promise<void>;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -33,8 +36,9 @@ interface ProductProviderProps {
 }
 
 export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(allProducts);
-  const [categories] = useState<Category[]>(allCategories);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<Filters>({
     category: null,
     priceRange: [0, 10000],
@@ -42,22 +46,64 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     search: '',
     sortBy: 'featured'
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
-  // NEW: Get subcategories for a category
+ // Fetch data from API
+const fetchData = async () => {
+  try {
+    setIsLoading(true);
+    setIsError(false);
+
+    console.log('Fetching data from API...');
+
+    // Fetch categories and products in parallel
+    const [categoriesData, productsData] = await Promise.all([
+      api.getCategories(),
+      api.getProducts()
+    ]);
+
+    console.log('Categories data:', categoriesData);
+    console.log('Products data:', productsData);
+
+    // Transform API data to match frontend interfaces
+    const transformedCategories = categoriesData.map(transformCategory);
+    const transformedProducts = productsData.map(transformProduct);
+
+    console.log('Transformed categories:', transformedCategories);
+    console.log('Transformed products:', transformedProducts);
+
+    setAllCategories(transformedCategories);
+    setAllProducts(transformedProducts);
+    setProducts(transformedProducts); // Initially show all products
+
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+    setIsError(true);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Get subcategories for a category
   const getSubcategories = (categoryId: string): Subcategory[] => {
-    const category = categories.find(cat => cat.id === categoryId);
+    const category = allCategories.find(cat => cat.id === categoryId);
     return category?.subcategories || [];
   };
 
-  // NEW: Get products by subcategory
+  // Get products by subcategory
   const getProductsBySubcategory = (categoryId: string, subcategoryId: string): Product[] => {
     return allProducts.filter(product => 
       product.category === categoryId && product.subcategory === subcategoryId
     );
   };
 
-  // UPDATED: Enhanced getProductsByCategory to work with or without subcategories
+  // Get products by category
   const getProductsByCategory = (categoryId: string): Product[] => {
     return allProducts.filter(
       (product) =>
@@ -66,7 +112,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     );
   };
 
-  // Keep all your existing filtering logic (unchanged)
+  // Filter and sort products based on current filters
   const getFilteredProducts = (): Product[] => {
     let filtered = [...allProducts];
 
@@ -123,14 +169,20 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     return filtered;
   };
 
+  // Update filtered products when filters change
   useEffect(() => {
-    setIsLoading(true);
-    // Simulate API delay
-    setTimeout(() => {
-      setProducts(getFilteredProducts());
-      setIsLoading(false);
-    }, 300);
-  }, [filters]);
+    if (allProducts.length > 0) {
+      setIsLoading(true);
+      
+      // Simulate API delay for smooth UX
+      const timer = setTimeout(() => {
+        setProducts(getFilteredProducts());
+        setIsLoading(false);
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [filters, allProducts]);
 
   const updateFilters = (newFilters: Partial<Filters>): void => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -154,19 +206,25 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) =>
     return allProducts.filter((product) => product.featured);
   };
 
+  const refetchData = async (): Promise<void> => {
+    await fetchData();
+  };
+
   const value: ProductContextType = {
     products,
-    categories,
+    categories: allCategories,
     filters,
     isLoading,
+    isError,
     updateFilters,
     resetFilters,
     getProductById,
     getProductsByCategory,
-    getProductsBySubcategory, // NEW
-    getSubcategories, // NEW
+    getProductsBySubcategory,
+    getSubcategories,
     getFeaturedProducts,
-    allProducts
+    allProducts,
+    refetchData
   };
 
   return (
