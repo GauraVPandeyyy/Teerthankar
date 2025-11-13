@@ -16,7 +16,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
 import { useWishlist } from "../../contexts/WishlistContext";
 import { Button } from "../ui/button";
-import { categories } from "../../data/categories";
+import { useProducts } from "../../contexts/ProductContext";
 import LoginModal from "../auth/LoginModal";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
@@ -33,6 +33,9 @@ const Header = () => {
   const { items: wishlistItems } = useWishlist();
   const location = useLocation();
   const headerRef = useRef<HTMLElement>(null);
+
+  const { categories } = useProducts();
+
 
   // Enhanced scroll behavior
   useEffect(() => {

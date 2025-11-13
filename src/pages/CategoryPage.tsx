@@ -154,7 +154,7 @@ const CategoryPage: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate(-1)}
-                className="backdrop-blur-md bg-white/20 hover:bg-white/30 text-white border border-white/20 rounded-2xl"
+                className="backdrop-blur-md bg-white/20 hover:bg-white/30 text-white border border-white/20 rounded-2xl flex items-center"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -263,7 +263,7 @@ const CategoryPage: React.FC = () => {
               <AnimatePresence>
                 {isTransitioning && (
                   <motion.div 
-                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -294,7 +294,7 @@ const CategoryPage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
-                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
                   >
                     {products.length === 0 ? (
                       <motion.div 

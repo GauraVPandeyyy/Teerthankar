@@ -38,7 +38,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-serif text-center">
-            Welcome to <span className="bg-gradient-gold bg-clip-text text-transparent">Luxe Jewels</span>
+            Welcome to <span className="bg-gradient-gold bg-clip-text text-transparent">Teerthankar Jewels</span>
           </DialogTitle>
         </DialogHeader>
 

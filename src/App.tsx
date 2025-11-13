@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

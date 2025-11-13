@@ -258,7 +258,7 @@ const Index: React.FC = () => {
         </div>
 
         {/* Carousel Controls */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+        <div className="hidden xl:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
           <div className="flex items-center gap-6">
             {/* Play/Pause Button */}
             <motion.button

@@ -60,19 +60,19 @@ const Cart = () => {
                           size="sm"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         >
-                          <Minus className="w-4 h-4" />
+                          <Minus className="w-2 h-2 md:w-4 md:h-4" />
                         </Button>
-                        <span className="px-4">{item.quantity}</span>
+                        <span className="px-0 md:px-4">{item.quantity}</span>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
-                          <Plus className="w-4 h-4" />
+                          <Plus className="w-2 h-2 md:w-4 md:h-4" />
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="hidden xl:flex items-center gap-4">
                         <span className="font-bold text-lg">
                           ₹{(item.price * item.quantity).toLocaleString()}
                         </span>
@@ -86,6 +86,19 @@ const Cart = () => {
                         </Button>
                       </div>
                     </div>
+                     <div className="flex xl:hidden items-center gap-4">
+                        <span className="font-bold text-lg">
+                          ₹{(item.price * item.quantity).toLocaleString()}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </Button>
+                      </div>
                   </div>
                 </div>
               </Card>
