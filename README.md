@@ -1,73 +1,100 @@
-# Welcome to your Lovable project
+# Teerthankar – Full-Stack E-Commerce Application (Freelance Project)
 
-## Project info
+Teerthankar is a full-stack e-commerce web application developed as a **freelance project** for **Teerthankar Jewels**, a costume jewelry shop based in Lucknow, Uttar Pradesh.
 
-**URL**: https://lovable.dev/projects/b4e39d8b-038b-4c14-a3a0-6a5d078c6e3a
+The application focuses on real-world e-commerce flows including authentication, product browsing, cart and wishlist management, and a clean, responsive user interface.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🔗 Live Demo
 
-**Use Lovable**
+**Frontend (Vercel):**  
+https://teerthankar.vercel.app
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b4e39d8b-038b-4c14-a3a0-6a5d078c6e3a) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ✨ Features
 
-**Use your preferred IDE**
+### Authentication
+- JWT-based authentication
+- Secure token handling via request headers
+- Protected user actions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Product Flow
+- Product listing and detailed product pages
+- Add to cart functionality
+- Wishlist support
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Cart & Wishlist
+- Add and remove items
+- Quantity management
+- Real-time UI updates
 
-Follow these steps:
+### UI & UX
+- Responsive design (mobile and desktop)
+- Reusable component-based architecture
+- Tailwind CSS–based styling
+- Smooth interactions and transitions
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🛠️ Tech Stack
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Frontend
+- React.js
+- TypeScript
+- Tailwind CSS
+- Vite
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Backend
+- PHP
+- Laravel
+- REST APIs
+
+### Authentication
+- JWT (JSON Web Tokens)
+
+### Deployment
+- Vercel (Frontend)
+
+---
+
+## 📂 Project Structure
+
+
+
+---
+
+## 🚀 Local Setup
+
+```bash
+git clone https://github.com/GauraVPandeyyy/Teerthankar.git
+cd Teerthankar
+npm install
 npm run dev
 ```
+---
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Production Build
+```
+npm run build
+```
+---
+## 📄 License
 
-**Use GitHub Codespaces**
+This project is developed as a freelance client project for Teerthankar Jewels,
+a costume jewelry shop based in Lucknow, Uttar Pradesh.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+All rights to the source code, design, and business logic belong to the client.
 
-## What technologies are used for this project?
+This repository is made public strictly for portfolio and demonstration purposes only.
+Reproduction, redistribution, or commercial use of this code is not permitted without
+explicit permission from the project owner.
 
-This project is built with:
+## 👤 Author
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Gaurav Pandey
+Full-Stack Developer (React)
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/b4e39d8b-038b-4c14-a3a0-6a5d078c6e3a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+GitHub: https://github.com/GauraVPandeyyy
