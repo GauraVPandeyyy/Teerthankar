@@ -54,7 +54,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {premiumShine}
+<<<<<<< HEAD
         <span className="relative z-10 flex gap-2 ">{props.children}</span>
+=======
+        <span className="relative z-10 flex gap-2">{props.children}</span>
+>>>>>>> e4081bd6f8f0c44cf91083b0d359ac5578837cfe
       </Comp>
     );
   },
