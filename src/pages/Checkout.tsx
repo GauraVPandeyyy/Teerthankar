@@ -1,3 +1,4 @@
+// src/pages/Checkout.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Wallet, Banknote } from 'lucide-react';
@@ -9,58 +10,104 @@ import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
+import * as api from '../services/api';
+import { useProducts } from '../contexts/ProductContext';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, getCartTotal, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const { getProductById } = useProducts();
+
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'online' | 'cod'>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
-    mobile: '',
-    address: '',
+    phone: '',
+    address_line1: '',
+    address_line2: '',
     city: '',
     state: '',
     pincode: ''
   });
 
-  if (items.length === 0) {
+  // redirect if cart empty
+  if (!items || items.length === 0) {
     navigate('/cart');
     return null;
   }
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleInputChange = (e: any) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  // compute totals
+  const subtotal = getCartTotal();
+  const shipping = subtotal >= 999 ? 0 : 98;
+  const total = subtotal + shipping;
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    
-    // Validation
-    if (!formData.fullName || !formData.mobile || !formData.address || !formData.city || !formData.state || !formData.pincode) {
-      toast.error('Please fill in all fields');
+    if (!formData.fullName || !formData.phone || !formData.address_line1 || !formData.city || !formData.state || !formData.pincode) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    if (!isAuthenticated) {
+      toast.error('Please login to place order');
+      navigate('/');
       return;
     }
 
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      clearCart();
-      toast.success('Order placed successfully!');
-      navigate('/profile');
-      setIsProcessing(false);
-    }, 2000);
-  };
+    // Build items payload with product_code (if available)
+    const itemsPayload = items.map(i => {
+      const prod = getProductById ? getProductById(i.product_id) : undefined;
+      const product_code = prod?.product_code ?? prod?.product_code ?? prod?.product_code ?? ''; // tolerant
+      return {
+        product_id: Number(i.product_id),
+        quantity: Number(i.quantity),
+        product_code, // we include it as requested
+      };
+    });
 
-  const subtotal = getCartTotal();
-  const shipping = subtotal >= 999 ? 0 : 99;
-  const total = subtotal + shipping;
+    // Final payload according to backend API
+    const payload = {
+      fullName: formData.fullName,
+      phone: formData.phone,
+      address_line1: formData.address_line1,
+      address_line2: formData.address_line2 || undefined,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode,
+      payment_method: paymentMethod.toUpperCase(), // backend examples use "COD"
+      shipping,
+      items: itemsPayload,
+      // include totals as extra info (backend may recalc)
+      subtotal,
+      total
+    };
+
+    try {
+      const res = await api.createOrder(payload); // maps to /api/orders/placeOrder
+      if (res?.status) {
+        toast.success(res?.message || 'Order placed successfully');
+        // clear cart locally & refresh
+        await clearCart();
+        // navigate to profile / order history; backend returns order id in data
+        navigate('/profile');
+      } else {
+        toast.error(res?.message || 'Order failed');
+      }
+    } catch (err: any) {
+      console.error('Order error', err);
+      const msg = err?.response?.data?.message || 'Failed to place order';
+      toast.error(msg);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,96 +116,60 @@ const Checkout = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Checkout Form */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Shipping Address */}
               <Card className="p-6">
                 <h2 className="text-xl font-bold mb-6">Shipping Address</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <Label htmlFor="fullName">Full Name *</Label>
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Input id="fullName" name="fullName" value={formData.fullName} onChange={handleInputChange} required />
                   </div>
                   <div className="md:col-span-2">
-                    <Label htmlFor="mobile">Mobile Number *</Label>
-                    <Input
-                      id="mobile"
-                      name="mobile"
-                      type="tel"
-                      value={formData.mobile}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required />
                   </div>
                   <div className="md:col-span-2">
-                    <Label htmlFor="address">Address *</Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Label htmlFor="address_line1">Address Line 1 *</Label>
+                    <Input id="address_line1" name="address_line1" value={formData.address_line1} onChange={handleInputChange} required />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="address_line2">Address Line 2 (optional)</Label>
+                    <Input id="address_line2" name="address_line2" value={formData.address_line2} onChange={handleInputChange} />
                   </div>
                   <div>
                     <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Input id="city" name="city" value={formData.city} onChange={handleInputChange} required />
                   </div>
                   <div>
                     <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Input id="state" name="state" value={formData.state} onChange={handleInputChange} required />
                   </div>
                   <div className="md:col-span-2">
                     <Label htmlFor="pincode">Pincode *</Label>
-                    <Input
-                      id="pincode"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                      required
-                    />
+                    <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleInputChange} required />
                   </div>
                 </div>
               </Card>
 
-              {/* Payment Method */}
               <Card className="p-6">
                 <h2 className="text-xl font-bold mb-6">Payment Method</h2>
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                <RadioGroup value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)}>
                   <div className="flex items-center space-x-3 p-4 border border-border rounded-lg mb-3 cursor-pointer hover:bg-muted">
-                    <RadioGroupItem value="card" id="card" />
+                    <div  />
                     <Label htmlFor="card" className="flex items-center gap-2 cursor-pointer flex-1">
                       <CreditCard className="w-5 h-5" />
                       <span>Credit / Debit Card</span>
                     </Label>
                   </div>
                   <div className="flex items-center space-x-3 p-4 border border-border rounded-lg mb-3 cursor-pointer hover:bg-muted">
-                    <RadioGroupItem value="upi" id="upi" />
-                    <Label htmlFor="upi" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <div  />
+                    <Label htmlFor="online" className="flex items-center gap-2 cursor-pointer flex-1">
                       <Wallet className="w-5 h-5" />
                       <span>UPI Payment</span>
                     </Label>
                   </div>
                   <div className="flex items-center space-x-3 p-4 border border-border rounded-lg cursor-pointer hover:bg-muted">
-                    <RadioGroupItem value="cod" id="cod" />
+                    <div />
                     <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer flex-1">
                       <Banknote className="w-5 h-5" />
                       <span>Cash on Delivery</span>
@@ -168,26 +179,23 @@ const Checkout = () => {
               </Card>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <Card className="p-6 sticky top-24">
                 <h2 className="text-xl font-bold mb-6">Order Summary</h2>
 
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4 mb-6 max-h-72 overflow-auto">
                   {items.map((item) => (
-                    <div key={item.id} className="flex gap-3">
-                      <img
-                        src={item.images[0]}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                    <div key={item.product_id} className="flex gap-3">
+                      <img src={(item.images && item.images[0]) || ''} alt={item.name} className="w-16 h-16 object-cover rounded" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                        <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                        {/* optional: show product_code if available from product context */}
+                        {getProductById && getProductById(item.product_id)?.product_code && (
+                          <p className="text-xs text-muted-foreground">Code: {getProductById(item.product_id).product_code}</p>
+                        )}
                       </div>
-                      <span className="text-sm font-medium">
-                        ₹{(item.price * item.quantity).toLocaleString()}
-                      </span>
+                      <span className="text-sm font-medium">₹{(item.unitPrice * item.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -209,12 +217,7 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full bg-gradient-gold hover:opacity-90"
-                  disabled={isProcessing}
-                >
+                <Button type="submit" size="lg" className="w-full bg-gradient-gold hover:opacity-90" disabled={isProcessing}>
                   {isProcessing ? 'Processing...' : 'Place Order'}
                 </Button>
               </Card>

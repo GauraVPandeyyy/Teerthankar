@@ -49,12 +49,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp 
-        className={cn(buttonVariants({ variant, size, className }), "relative group")} 
+        className={cn(buttonVariants({ variant, size, className }), "relative group flex")} 
         ref={ref} 
         {...props}
       >
         {premiumShine}
-        <span className="relative z-10">{props.children}</span>
+        <span className="relative z-10 flex gap-2 ">{props.children}</span>
       </Comp>
     );
   },

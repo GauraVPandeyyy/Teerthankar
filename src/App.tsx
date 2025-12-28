@@ -19,7 +19,8 @@ import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
-
+import ProtectedRoute from "./components/ProtectedRoute";
+import OrderDetails from "./pages/OrderDetails";
 
 const queryClient = new QueryClient();
 
@@ -40,11 +41,53 @@ const App = () => (
                       <Route path="/" element={<Index />} />
                       <Route path="/shop" element={<Shop />} />
                       <Route path="/product/:id" element={<ProductDetail />} />
-                      <Route path="/category/:slug" element={<CategoryPage />} />
-                      <Route path="/cart" element={<Cart />} />
-                      <Route path="/wishlist" element={<Wishlist />} />
-                      <Route path="/checkout" element={<Checkout />} />
-                      <Route path="/profile" element={<Profile />} />
+                      <Route
+                        path="/category/:slug"
+                        element={<CategoryPage />}
+                      />
+
+                      {/* Protected Routes */}
+                      <Route
+                        path="/cart"
+                        element={
+                          <ProtectedRoute>
+                            <Cart />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/wishlist"
+                        element={
+                          <ProtectedRoute>
+                            <Wishlist />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/checkout"
+                        element={
+                          <ProtectedRoute>
+                            <Checkout />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <Profile />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/order/:order_id"
+                        element={
+                          <ProtectedRoute>
+                            <OrderDetails />
+                          </ProtectedRoute>
+                        }
+                      />
+
                       <Route path="/search" element={<Search />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

@@ -1,33 +1,50 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { toast } from 'sonner';
+// src/components/auth/LoginModal.tsx
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { toast } from "sonner";
 
-const LoginModal = ({ isOpen, onClose }) => {
-  const [mobile, setMobile] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const LoginModal = ({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
   const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    
-    // Validate mobile number
-    if (!/^\d{10}$/.test(mobile)) {
-      toast.error('Please enter a valid 10-digit mobile number');
+
+    if (!email || !password) {
+      toast.error("Please enter all fields");
       return;
     }
 
     setIsLoading(true);
     try {
-      await login(mobile);
-      toast.success('Welcome back!');
+      await login(email, password);
+      toast.success("Login successful!");
+      setEmail("");
+      setPassword("");
       onClose();
-      setMobile('');
-    } catch (error) {
-      toast.error('Login failed. Please try again.');
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Login failed. Try again.";
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -38,37 +55,41 @@ const LoginModal = ({ isOpen, onClose }) => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-serif text-center">
-            Welcome to <span className="bg-gradient-gold bg-clip-text text-transparent">Teerthankar Jewels</span>
+            Welcome Back!
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Mobile Number</label>
+        <form onSubmit={handleSubmit} className="mt-4 space-y-5">
+          <div>
+            <label>Email</label>
             <Input
-              type="tel"
-              placeholder="Enter 10-digit mobile number"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
-              maxLength={10}
-              required
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="text-base"
+              required
             />
-            <p className="text-xs text-muted-foreground">
-              We'll send you an OTP to verify your number
-            </p>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-gradient-gold hover:opacity-90"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Logging in...' : 'Continue'}
+          <div>
+            <label>Password</label>
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="text-base"
+              required
+            />
+          </div>
+
+          <Button className="w-full bg-gradient-gold" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            We'll implement OTP login soon.
           </p>
         </form>
       </DialogContent>
