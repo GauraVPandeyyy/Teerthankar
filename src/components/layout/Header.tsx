@@ -9,10 +9,10 @@ import {
   Menu,
   X,
   Sparkles,
+  ChevronRight,
   ChevronDown,
-  Crown,
-  Gem,
 } from "lucide-react";
+import Logo from "../../assets/logo.png";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
 import { useWishlist } from "../../contexts/WishlistContext";
@@ -20,6 +20,7 @@ import { Button } from "../ui/button";
 import { useProducts } from "../../contexts/ProductContext";
 import LoginModal from "../auth/LoginModal";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import { cn } from "../../lib/utils";
 import { toast } from "sonner";
 
 const Header = () => {
@@ -35,21 +36,23 @@ const Header = () => {
   const { items: wishlistItems } = useWishlist();
   const location = useLocation();
   const headerRef = useRef<HTMLElement>(null);
-
   const { categories } = useProducts();
+  const navigate = useNavigate();
 
-  // Enhanced scroll behavior
+  // 1. Scroll & Visibility Logic
   useEffect(() => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > 80) {
+      // Show background after scrolling 50px
+      if (currentScrollY > 50) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
 
-      if (currentScrollY > lastScrollY && currentScrollY > 200) {
+      // Hide header on scroll down, show on scroll up (after 200px)
+      if (currentScrollY > lastScrollY && currentScrollY > 200 && !isMenuOpen) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
@@ -60,25 +63,31 @@ const Header = () => {
 
     window.addEventListener("scroll", controlHeader, { passive: true });
     return () => window.removeEventListener("scroll", controlHeader);
-  }, [lastScrollY]);
+  }, [lastScrollY, isMenuOpen]);
 
+  // 2. Lock Body Scroll when Menu is Open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
+  // 3. Close Menu on Route Change
   useEffect(() => {
     setIsMenuOpen(false);
     setIsCategoriesOpen(false);
   }, [location]);
 
-  // ensure getCartCount is safe (it should be a function from the context)
-  let cartCount = 0;
-  try {
-    cartCount = typeof getCartCount === "function" ? getCartCount() : 0;
-  } catch {
-    cartCount = 0;
-  }
-
+  // Safe Accessors
+  const cartCount = typeof getCartCount === "function" ? getCartCount() : 0;
   const wishlistCount = Array.isArray(wishlistItems) ? wishlistItems.length : 0;
 
-  const navigate = useNavigate();
-
+  // Handlers
   const handleCartClick = () => {
     if (!isAuthenticated) {
       setIsLoginOpen(true);
@@ -97,21 +106,33 @@ const Header = () => {
     navigate("/wishlist");
   };
 
+  // Animations
   const headerVariants: Variants = {
-    visible: {
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
-    },
+    visible: { y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
     hidden: {
-      y: -120,
+      y: "-100%",
+      transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
+
+  const mobileMenuVariants: Variants = {
+    closed: { opacity: 0, x: "100%" },
+    open: {
+      opacity: 1,
+      x: 0,
       transition: {
-        duration: 0.4,
-        ease: [0.55, 0.085, 0.68, 0.53],
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        staggerChildren: 0.1,
       },
     },
+    exit: { opacity: 0, x: "100%", transition: { duration: 0.3 } },
+  };
+
+  const linkVariants: Variants = {
+    closed: { opacity: 0, x: 50 },
+    open: { opacity: 1, x: 0 },
   };
 
   return (
@@ -120,376 +141,412 @@ const Header = () => {
         ref={headerRef}
         variants={headerVariants}
         animate={isVisible ? "visible" : "hidden"}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-red-900",
+          // Base styles
+          "border-b border-transparent",
+          // Scroll State (Glassmorphism + Shadow)
           isScrolled
-            ? "bg-white/90 backdrop-blur-2xl shadow-2xl border-b border-slate-200/40"
-            : "backdrop-blur-2xl bg-yellow-700/30"
-        }`}
+            ? "bg-white/80 backdrop-blur-xl shadow-sm border-white/20 py-2"
+            : "bg-transparent pb-4 pt-2"
+        )}
       >
-        {/* Premium Top Bar */}
+        {/* Scrim Gradient for Contrast (Only when transparent) */}
+        <div
+          className={cn(
+            "absolute inset-0 -z-10 bg-gradient-to-b from-black/40 to-transparent transition-opacity duration-500",
+            isScrolled ? "opacity-0" : "opacity-100"
+          )}
+        />
+
+        {/* Premium Top Bar (Hidden on Mobile) */}
         <AnimatePresence>
           {!isScrolled && (
             <motion.div
-              className="w-full border-b border-white/10"
+              className="w-full border-b border-white/10 mb-2"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
             >
-              <div className="bg-gradient-to-r from-amber-900/30 to-rose-900/30 backdrop-blur-md py-2.5">
-                <div className="container mx-auto px-6">
-                  <div className="flex items-center justify-center gap-8 text-white/90 text-sm font-medium">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-300" />
-                      <span>Free Shipping Over ₹999</span>
-                    </div>
-                    <div className="hidden md:flex items-center gap-2">
-                      <Crown className="w-4 h-4 text-amber-300" />
-                      <span>Premium Quality</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="container mx-auto px-6 pb-2 flex justify-center items-center gap-6 text-xs font-medium text-white/90 tracking-wide">
+                <span>Free Shipping on Orders Over ₹999</span>
+                <span className="w-1 h-1 rounded-full bg-white/50 hidden md:flex" />
+                <span className="hidden md:flex">
+                  Lifetime Plating Warranty
+                </span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Main Navigation Bar */}
-        <div className="container mx-auto px-3 lg:px-4 relative">
-          <div className="flex items-center justify-between h-20">
-            {/* Premium Logo Section */}
-            <Link to="/" className="flex items-center gap-3 z-50 group">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-3"
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* 1. LEFT: Mobile Menu & Search (Mobile Only) */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMenuOpen(true)}
+                className={cn(
+                  "text-white hover:bg-white/20",
+                  isScrolled && "text-slate-900 hover:bg-slate-100"
+                )}
               >
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-400 to-rose-500 flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500">
-                    <Gem className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="hidden xl:flex absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                </div>
+                <Menu className="w-6 h-6" />
+              </Button>
+              <Link to="/search">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn("text-white", isScrolled && "text-slate-900")}
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+              </Link>
+            </div>
 
-                <div className="hidden lg:block">
-                  <motion.h1
-                    className="font-serif text-2xl font-bold leading-tight"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                  >
-                    <span
-                      className={`bg-gradient-to-r from-amber-600 to-rose-600 bg-clip-text text-transparent ${
-                        isScrolled ? "" : "text-white"
-                      }`}
-                    >
-                      Teerthankar
-                    </span>
-                    <span
-                      className={`block text-sm font-sans font-normal ${
-                        isScrolled ? "text-slate-600" : "text-amber-100"
-                      } -mt-1`}
-                    >
-                      Artisan Jewels
-                    </span>
-                  </motion.h1>
-                </div>
-              </motion.div>
+            {/* 2. CENTER/LEFT: Logo */}
+            <Link
+              to="/"
+              className="flex items-center gap-3 group relative z-50"
+            >
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12">
+                <img
+                  src={Logo}
+                  alt="Teerthankar Logo"
+                  className="w-full h-full object-contain drop-shadow-md"
+                />
+              </div>
+              <div className="hidden lg:block">
+                <h1
+                  className={cn(
+                    "font-serif text-2xl font-bold tracking-tight leading-none transition-colors duration-300",
+                    isScrolled ? "text-slate-900" : "text-white"
+                  )}
+                >
+                  Teerthankar
+                </h1>
+                <span
+                  className={cn(
+                    "text-[10px] uppercase tracking-[0.2em] font-medium transition-colors duration-300",
+                    isScrolled ? "text-amber-700" : "text-white/80"
+                  )}
+                >
+                  Artisan Jewels
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation - Centered */}
-            <nav className="hidden xl:flex items-center space-x-10 absolute left-1/2 transform -translate-x-1/2">
-              <Link
-                to="/"
-                className={`relative font-medium text-lg transition-all duration-300 group ${
-                  isScrolled
-                    ? "text-slate-700 hover:text-slate-900"
-                    : "text-white hover:text-amber-200"
-                }`}
-              >
-                Home
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-
-              {/* Enhanced Categories Mega Menu */}
-              <div
-                className="relative"
-                onMouseEnter={() => setIsCategoriesOpen(true)}
-                onMouseLeave={() => setIsCategoriesOpen(false)}
-              >
-                <button
-                  className={`flex items-center gap-2 font-medium text-lg transition-all duration-300 group ${
-                    isScrolled
-                      ? "text-slate-700 hover:text-slate-900"
-                      : "text-white hover:text-amber-200"
-                  }`}
-                >
-                  Collections
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${
-                      isCategoriesOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                  <span className="absolute -bottom-1 left-0 right-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
-                </button>
-
-                <AnimatePresence>
-                  {isCategoriesOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute top-[100%] right-[0%] -left-[350%] mt-6 w-screen max-w-6xl bg-white/95 backdrop-blur-2xl border border-slate-200/60 shadow-3xl rounded-3xl p-3"
+            {/* 3. CENTER: Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+              {[
+                { name: "Home", path: "/" },
+                { name: "Shop All", path: "/shop" },
+                { name: "Collections", path: "#", isDropdown: true },
+                { name: "About", path: "/about" },
+              ].map((item) => (
+                <div key={item.name} className="relative group">
+                  {item.isDropdown ? (
+                    <button
+                      onMouseEnter={() => setIsCategoriesOpen(true)}
+                      className={cn(
+                        "flex items-center gap-1 text-sm font-medium transition-colors duration-300 py-2",
+                        isScrolled
+                          ? "text-slate-700 hover:text-amber-600"
+                          : "text-white/90 hover:text-white"
+                      )}
                     >
-                      <div className="grid grid-cols-5 gap-2">
-                        {categories.map((category) => (
-                          <Link
-                            key={category.id}
-                            to={`/category/${category.slug}`}
-                            className="group flex flex-col items-center text-center p-3 rounded-2xl hover:bg-gradient-to-br hover:from-amber-50/50 hover:to-rose-50/50 transition-all duration-500 border border-transparent hover:border-amber-200/50"
-                          >
-                            <div className="relative w-20 h-20 rounded-2xl overflow-hidden mb-4 border-2 border-slate-200 group-hover:border-amber-300 group-hover:scale-110 transition-all duration-500 shadow-lg">
-                              <img
-                                src={category.image}
-                                alt={category.name}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 group-hover:text-amber-600 transition-colors text-sm mb-2">
-                              {category.name}
-                            </h3>
-                            <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                              {category.description}
-                            </p>
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
+                      {item.name}
+                      <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={cn(
+                        "text-sm font-medium transition-colors duration-300 py-2 relative",
+                        isScrolled
+                          ? "text-slate-700 hover:text-amber-600"
+                          : "text-white/90 hover:text-white"
+                      )}
+                    >
+                      {item.name}
+                      <span className="absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300 group-hover:w-full" />
+                    </Link>
                   )}
-                </AnimatePresence>
-              </div>
-
-              <Link
-                to="/shop"
-                className={`relative font-medium text-lg transition-all duration-300 group ${
-                  isScrolled
-                    ? "text-slate-700 hover:text-slate-900"
-                    : "text-white hover:text-amber-200"
-                }`}
-              >
-                Shop All
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-
-              <Link
-                to="/contact"
-                className={`relative font-medium text-lg transition-all duration-300 group ${
-                  isScrolled
-                    ? "text-slate-700 hover:text-slate-900"
-                    : "text-white hover:text-amber-200"
-                }`}
-              >
-                Contact
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-500 to-rose-500 group-hover:w-full transition-all duration-300"></span>
-              </Link>
+                </div>
+              ))}
             </nav>
 
-            {/* Action Buttons - Right Side */}
-            <div className="flex items-center lg:space-x-4">
-              {/* Search */}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/search">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`rounded-2xl transition-all duration-300 group relative overflow-hidden ${
-                      isScrolled
-                        ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                        : "text-white hover:text-amber-200 hover:bg-white/10"
-                    }`}
-                  >
-                    <Search className="w-5 h-5" />
-                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  </Button>
-                </Link>
-              </motion.div>
+            {/* 4. RIGHT: Actions */}
+            <div className="flex items-center gap-1 lg:gap-3">
+              {/* Desktop Search */}
+              <Link to="/search" className="hidden lg:block">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "rounded-full transition-colors",
+                    isScrolled
+                      ? "text-slate-700 hover:bg-slate-100"
+                      : "text-white hover:bg-white/20"
+                  )}
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+              </Link>
 
               {/* Wishlist */}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleWishlistClick}
-                  className={`rounded-2xl text-4xl font-extrabold text-yellow-700 transition-all duration-300 group relative overflow-hidden cursor-pointer ${
-                    isScrolled
-                      ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                      : "text-white hover:text-amber-200 hover:bg-white/10"
-                  }`}
-                >
-                  <Heart className="w-6 h-6" />
-                  {wishlistCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-rose-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg"
-                    >
-                      {wishlistCount}
-                    </motion.span>
-                  )}
-                  <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                </Button>
-              </motion.div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleWishlistClick}
+                className={cn(
+                  "rounded-full transition-colors relative",
+                  isScrolled
+                    ? "text-slate-700 hover:bg-slate-100"
+                    : "text-white hover:bg-white/20"
+                )}
+              >
+                <Heart className="w-5 h-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
+                )}
+              </Button>
 
               {/* Cart */}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCartClick}
-                  className={`rounded-2xl transition-all duration-300 group relative overflow-hidden cursor-pointer ${
-                    isScrolled
-                      ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                      : "text-white hover:text-amber-200 hover:bg-white/10"
-                  }`}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-lg border border-white"
-                    >
-                      {cartCount}
-                    </motion.span>
-                  )}
-                  <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                </Button>
-              </motion.div>
-
-              {/* User Account */}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                {isAuthenticated ? (
-                  <Link to="/profile">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`rounded-2xl transition-all duration-300 group relative overflow-hidden ${
-                        isScrolled
-                          ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                          : "text-white hover:text-amber-200 hover:bg-white/10"
-                      }`}
-                    >
-                      <User className="w-5 h-5" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsLoginOpen(true)}
-                    className={`rounded-2xl transition-all duration-300 group relative overflow-hidden ${
-                      isScrolled
-                        ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                        : "text-white hover:text-amber-200 hover:bg-white/10"
-                    }`}
-                  >
-                    <User className="w-5 h-5" />
-                    <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCartClick}
+                className={cn(
+                  "rounded-full transition-colors relative",
+                  isScrolled
+                    ? "text-slate-700 hover:bg-slate-100"
+                    : "text-white hover:bg-white/20"
                 )}
-              </motion.div>
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-[10px] font-bold text-white flex items-center justify-center rounded-full ring-2 ring-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
 
-              {/* Mobile Menu Toggle */}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              {/* User Profile (Desktop) */}
+              <div className="hidden lg:block">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={`xl:hidden rounded-2xl transition-all duration-300 group relative overflow-hidden ${
+                  onClick={() =>
+                    isAuthenticated
+                      ? navigate("/profile")
+                      : setIsLoginOpen(true)
+                  }
+                  className={cn(
+                    "rounded-full transition-colors",
                     isScrolled
-                      ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                      : "text-white hover:text-amber-200 hover:bg-white/10"
-                  }`}
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      ? "text-slate-700 hover:bg-slate-100"
+                      : "text-white hover:bg-white/20"
+                  )}
                 >
-                  {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                  <div className="hidden xl:flex absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <User className="w-5 h-5" />
                 </Button>
-              </motion.div>
+              </div>
             </div>
           </div>
-
-          {/* Mobile Navigation Panel */}
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="xl:hidden absolute top-full left-0 right-0 bg-gradient-to-r from-amber-100 to-rose-100 backdrop-blur-2xl border-b border-slate-200/60 shadow-3xl overflow-hidden"
-              >
-                <div className="container mx-auto px-6 py-8">
-                  <nav className="flex flex-col space-y-6">
-                    <Link
-                      to="/"
-                      className="flex items-center gap-4 text-slate-800 hover:text-amber-600 transition-colors py-3 font-semibold text-xl border-b border-slate-100 group"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      Home
-                    </Link>
-
-                    <div className="border-b border-slate-100 pb-6">
-                      <h3 className="font-semibold text-slate-700 mb-4 text-lg flex items-center gap-3">
-                        <Sparkles className="w-5 h-5 text-amber-500" />
-                        Collections
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        {categories.slice(0, 6).map((category) => (
-                          <Link
-                            key={category.id}
-                            to={`/category/${category.slug}`}
-                            className="flex items-center gap-3 text-slate-600 hover:text-amber-600 transition-colors py-3 px-4 rounded-2xl hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-rose-50/50 group"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 group-hover:border-amber-300 transition-colors duration-300 shadow-sm">
-                              <img
-                                src={category.image}
-                                alt={category.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <span className="font-medium text-sm">
-                              {category.name}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    {["Shop All", "Contact"].map((item) => (
-                      <Link
-                        key={item}
-                        to={`/${item.toLowerCase().replace(" ", "-")}`}
-                        className="flex items-center gap-4 text-slate-800 hover:text-amber-600 transition-colors py-3 font-semibold text-xl border-b border-slate-100 group"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="w-2 h-2 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        {item}
-                      </Link>
-                    ))}
-                  </nav>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
+
+        {/* 5. MEGA MENU (Desktop Collections) */}
+        <AnimatePresence>
+          {isCategoriesOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              onMouseEnter={() => setIsCategoriesOpen(true)}
+              onMouseLeave={() => setIsCategoriesOpen(false)}
+              className="absolute top-full left-0 w-full bg-white border-t border-slate-100 shadow-xl py-12"
+            >
+              <div className="container mx-auto px-6">
+                <div className="grid grid-cols-5 gap-8">
+                  {/* Featured Category */}
+                  <div className="col-span-1 p-6 bg-amber-50 rounded-2xl">
+                    <h3 className="font-serif text-xl font-bold text-amber-900 mb-2">
+                      New Arrivals
+                    </h3>
+                    <p className="text-amber-800/70 text-sm mb-4">
+                      Explore the latest trends in artisan jewelry.
+                    </p>
+                    <Link
+                      to="/shop?sort=newest"
+                      className="text-amber-700 font-medium text-sm hover:underline"
+                    >
+                      Shop Now &rarr;
+                    </Link>
+                  </div>
+
+                  {/* Category List */}
+                  {categories.slice(0, 4).map((cat) => (
+                    <Link
+                      key={cat.id}
+                      to={`/category/${cat.slug}`}
+                      className="group flex flex-col items-center text-center"
+                    >
+                      <div className="h-[170px] w-[170px] rounded-full overflow-hidden mb-4 border-2 border-transparent group-hover:border-amber-400 transition-all">
+                        <img
+                          src={cat.image}
+                          alt={cat.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
+                      <h4 className="font-medium text-slate-900 group-hover:text-amber-600">
+                        {cat.name}
+                      </h4>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
 
-      {/* Spacer for fixed header */}
-      <div className="h-28" />
+      {/* 6. MOBILE FULL-SCREEN MENU */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            variants={mobileMenuVariants}
+            initial="closed"
+            animate="open"
+            exit="exit"
+            className="fixed inset-0 z-[60] bg-white flex flex-col overflow-hidden"
+          >
+            {/* Mobile Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <img src={Logo} alt="Logo" className="w-8 h-8" />
+                <span className="font-serif text-lg font-bold text-slate-900">
+                  Teerthankar
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <X className="w-6 h-6 text-slate-900" />
+              </Button>
+            </div>
+
+            {/* Mobile Content */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col">
+              {/* Search Bar */}
+              <div className="relative mb-8">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search for jewelry..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate("/search");
+                  }}
+                />
+              </div>
+
+              {/* Links */}
+              <div className="space-y-6">
+                {[
+                  { name: "Home", path: "/" },
+                  { name: "Shop All", path: "/shop" },
+                  { name: "Profile", path: "/profile" },
+                  // { name: "Track Order", path: "/track-order" },
+                ].map((link) => (
+                  <motion.div key={link.name} variants={linkVariants}>
+                    {link.name === "Profile" && !isAuthenticated ? (
+                      <Link
+                        to={link.path}
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsLoginOpen(true);
+                        }}
+                        className="text-3xl font-serif font-medium text-slate-900 hover:text-amber-600 transition-colors block"
+                      >
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="text-3xl font-serif font-medium text-slate-900 hover:text-amber-600 transition-colors block"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Collapsible Categories */}
+                <motion.div
+                  variants={linkVariants}
+                  className="pt-4 border-t border-slate-100"
+                >
+                  <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
+                    Collections
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        to={`/category/${cat.slug}`}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl hover:bg-amber-50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-white overflow-hidden border border-slate-200">
+                          <img
+                            src={cat.image}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className="text-sm font-medium text-slate-700 group-hover:text-amber-700">
+                          {cat.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Mobile Footer */}
+            <div className="p-6 bg-slate-50 border-t border-slate-100">
+              {!isAuthenticated ? (
+                <Button
+                  className="w-full bg-slate-900 text-white py-6 text-lg"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsLoginOpen(true);
+                  }}
+                >
+                  Login / Sign Up
+                </Button>
+              ) : (
+                <Button
+                  className="w-full bg-rose-100 text-orange-300 hover:bg-rose-200 border border-rose-200 py-6 text-lg"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Welcome Back, User
+                </Button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Package, Heart, LogOut, Edit2, ArrowRight } from 'lucide-react';
+import { User, Package, Heart, LogOut, Edit2, ArrowRight, Settings, ShoppingBag } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -35,7 +35,7 @@ const Profile = () => {
     navigate('/');
   };
 
-  const handleSave = () => {
+  const handleSaveProfile = () => {
     updateProfile(formData);
     setIsEditing(false);
     toast.success('Profile updated successfully');
@@ -56,147 +56,126 @@ const Profile = () => {
   useEffect(() => {
     loadOrders();
   }, []);
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="font-serif text-4xl font-bold mb-8">My Account</h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="min-h-screen bg-background py-12 md:py-20 mt-[80px]">
+      <div className="container mx-auto px-4 md:px-6">
+        
+        <div className="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto">
           
-          {/* Sidebar */}
-          <Card className="p-6 h-fit">
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 rounded-full bg-gradient-gold flex items-center justify-center text-white text-2xl font-bold mb-3">
-                {user?.name?.charAt(0) || 'U'}
-              </div>
-              <h2 className="font-semibold text-lg">{user?.name || 'User'}</h2>
-              <p className="text-sm text-muted-foreground">{user?.mobile}</p>
-            </div>
+          {/* SIDEBAR */}
+          <div className="md:w-1/4">
+             <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 sticky top-24 text-center">
+                <div className="w-20 h-20 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4 text-2xl font-serif font-bold">
+                  {user?.name?.[0] || "U"}
+                </div>
+                <h2 className="font-serif text-xl font-bold text-slate-900">{user?.name}</h2>
+                <p className="text-sm text-slate-500 mb-6">{user?.email}</p>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => { logout(); navigate('/'); }}
+                  className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700"
+                >
+                  <LogOut className="w-4 h-4 mr-2" /> Logout
+                </Button>
+             </div>
+          </div>
 
-            <nav className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start">
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </Button>
+          {/* MAIN CONTENT */}
+          <div className="flex-1">
+             <Tabs defaultValue="orders" className="w-full">
+               <TabsList className="bg-white p-1 rounded-full border border-slate-100 mb-8 h-12 w-fit">
+                 <TabsTrigger value="orders" className="rounded-full px-6 data-[state=active]:bg-slate-900 data-[state=active]:text-white">
+                   <Package className="w-4 h-4 mr-2" /> My Orders
+                 </TabsTrigger>
+                 <TabsTrigger value="settings" className="rounded-full px-6 data-[state=active]:bg-slate-900 data-[state=active]:text-white">
+                   <Settings className="w-4 h-4 mr-2" /> Settings
+                 </TabsTrigger>
+               </TabsList>
 
-              <Button variant="ghost" className="w-full justify-start">
-                <Package className="w-4 h-4 mr-2" />
-                Orders
-              </Button>
-
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start"
-                onClick={() => navigate('/wishlist')}
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                Wishlist
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-destructive hover:text-destructive"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </nav>
-          </Card>
-
-          {/* Content */}
-          <div className="lg:col-span-3">
-            <Tabs defaultValue="profile" className="w-full">
-              
-              <TabsList>
-                <TabsTrigger value="profile">Profile Details</TabsTrigger>
-                <TabsTrigger value="orders">Order History</TabsTrigger>
-              </TabsList>
-
-              {/* PROFILE */}
-              <TabsContent value="profile">
-                <Card className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold">Profile Information</h2>
-
-                    {!isEditing ? (
-                      <Button variant="outline" onClick={() => setIsEditing(true)}>
-                        <Edit2 className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    ) : (
-                      <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={handleSave}>
-                          Save Changes
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} disabled={!isEditing} />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input name="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} disabled={!isEditing} />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="mobile">Mobile</Label>
-                      <Input name="mobile" value={formData.mobile} disabled />
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
-
-              {/* ORDER TAB */}
-              <TabsContent value="orders">
-                <div className="space-y-4">
-                  {loadingOrders ? (
-                    <p>Loading orders...</p>
-                  ) : orders.length === 0 ? (
-                    <Card className="p-12 text-center">
-                      <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-bold mb-2">No orders yet</h3>
-                      <Button onClick={() => navigate('/shop')}>Browse Products</Button>
-                    </Card>
-                  ) : (
-                    orders.map((order) => (
-                      <Card key={order.order_id} className="p-6 flex justify-between items-center">
-                        <div>
-                          <h3 className="font-bold text-lg">{order.order_id}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Status: {order.order_status}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Total: ₹{Number(order.total_amount).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Items: {order.items_count}
-                          </p>
+               {/* ORDERS TAB */}
+               <TabsContent value="orders" className="space-y-6">
+                 <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4">Order History</h2>
+                 
+                 {loadingOrders ? (
+                   <div>Loading...</div>
+                 ) : orders.length === 0 ? (
+                   <div className="bg-white p-12 rounded-[2rem] text-center border border-slate-100">
+                     <ShoppingBag className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+                     <h3 className="font-bold text-lg">No orders yet</h3>
+                     <p className="text-slate-500 mb-6">Start your collection today.</p>
+                     <Link to="/shop"><Button>Browse Shop</Button></Link>
+                   </div>
+                 ) : (
+                   orders.map((order) => (
+                     <div key={order.order_id} className="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 hover:shadow-md transition-shadow">
+                        <div className="text-center sm:text-left">
+                          <p className="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Order #{order.order_id}</p>
+                          <h3 className="font-serif text-lg font-bold text-slate-900">₹{Number(order.total_amount).toLocaleString()}</h3>
+                          <p className="text-sm text-slate-500">{new Date(order.created_at).toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div className="px-4 py-1 bg-amber-50 text-amber-700 text-sm font-medium rounded-full">
+                          {order.order_status}
                         </div>
 
                         <Link to={`/order/${order.order_id}`}>
-                          <Button className="flex items-center gap-2 bg-gradient-gold">
-                            View <ArrowRight size={18} />
+                          <Button variant="outline" className="rounded-full border-slate-200">
+                            Details <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
-                      </Card>
-                    ))
-                  )}
-                </div>
-              </TabsContent>
+                     </div>
+                   ))
+                 )}
+               </TabsContent>
 
-            </Tabs>
+               {/* SETTINGS TAB */}
+               <TabsContent value="settings">
+                 <div className="bg-white p-8 rounded-[2rem] border border-slate-100">
+                   <div className="flex justify-between items-center mb-6">
+                     <h2 className="font-serif text-2xl font-bold text-slate-900">Profile Details</h2>
+                     <Button 
+                       variant="ghost" 
+                       onClick={() => isEditing ? handleSaveProfile() : setIsEditing(true)}
+                       className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                     >
+                       {isEditing ? "Save Changes" : "Edit Profile"}
+                     </Button>
+                   </div>
+                   
+                   <div className="grid gap-6 max-w-lg">
+                     <div className="space-y-2">
+                       <label className="text-sm font-medium text-slate-700">Full Name</label>
+                       <Input 
+                         value={formData.name} 
+                         disabled={!isEditing} 
+                         onChange={(e) => setFormData({...formData, name: e.target.value})}
+                         className="bg-slate-50 border-slate-200 h-12" 
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <label className="text-sm font-medium text-slate-700">Email Address</label>
+                       <Input 
+                         value={formData.email} 
+                         disabled={!isEditing} 
+                         onChange={(e) => setFormData({...formData, email: e.target.value})}
+                         className="bg-slate-50 border-slate-200 h-12" 
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                       <Input 
+                         value={formData.mobile} 
+                         disabled={!isEditing} 
+                         onChange={(e) => setFormData({...formData, mobile: e.target.value})}
+                         className="bg-slate-50 border-slate-200 h-12" 
+                       />
+                     </div>
+                   </div>
+                 </div>
+               </TabsContent>
+             </Tabs>
           </div>
-
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ const Search = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-[100px]">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto mb-12">
           <h1 className="font-serif text-4xl font-bold text-center mb-8">Search Products</h1>
@@ -44,7 +44,7 @@ const Search = () => {
             <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

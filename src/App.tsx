@@ -21,6 +21,10 @@ import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import OrderDetails from "./pages/OrderDetails";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsConditions from "./pages/legal/TermsConditions";
+import RefundPolicy from "./pages/legal/RefundPolicy";
+import ShippingPolicy from "./pages/legal/ShippingPolicy";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +48,19 @@ const App = () => (
                       <Route
                         path="/category/:slug"
                         element={<CategoryPage />}
+                      />
+                      <Route
+                        path="/privacy-policy"
+                        element={<PrivacyPolicy />}
+                      />
+                      <Route
+                        path="/terms-conditions"
+                        element={<TermsConditions />}
+                      />
+                      <Route path="/refund-policy" element={<RefundPolicy />} />
+                      <Route
+                        path="/shipping-policy"
+                        element={<ShippingPolicy />}
                       />
 
                       {/* Protected Routes */}

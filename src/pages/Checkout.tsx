@@ -191,9 +191,9 @@ const Checkout = () => {
                         <p className="text-sm font-medium truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                         {/* optional: show product_code if available from product context */}
-                        {getProductById && getProductById(item.product_id)?.product_code && (
+                        {/* {getProductById && getProductById(item.product_id)?.product_code && (
                           <p className="text-xs text-muted-foreground">Code: {getProductById(item.product_id).product_code}</p>
-                        )}
+                        )} */}
                       </div>
                       <span className="text-sm font-medium">₹{(item.unitPrice * item.quantity).toLocaleString()}</span>
                     </div>

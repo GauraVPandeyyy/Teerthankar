@@ -53,14 +53,14 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background mt-[80px]">
       <div className="container mx-auto px-2 py-6">
         <Link to="/shop"><Button variant="ghost" className="mb-6"><ArrowLeft className="w-4 h-4 mr-2" />Back to Shop</Button></Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
           <div className="space-y-4">
-            <div className="aspect-square rounded-lg overflow-hidden border border-border">
-              <img src={product.images[selectedImage]} alt={product.name} className="w-full h-full object-cover" />
+            <div className="w-full h-[350px] md:h-[400px] rounded-lg overflow-hidden border border-border">
+              <img src={product.images[selectedImage]} alt={product.name} className="w-full h-full object-cover object-center" />
             </div>
             {product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-4">
@@ -124,7 +124,7 @@ const ProductDetail = () => {
         {relatedProducts.length > 0 && (
           <section>
             <h2 className="font-serif text-3xl font-bold mb-8">You May Also Like</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {relatedProducts.map((p: any) => <ProductCard key={p.id} product={p} />)}
             </div>
           </section>

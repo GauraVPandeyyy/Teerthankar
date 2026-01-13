@@ -43,7 +43,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Add shine effect for premium variant
     const premiumShine = variant === "premium" && (
       <div className="absolute inset-0 -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
-        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/90 to-transparent"></div>
       </div>
     );
 
