@@ -28,14 +28,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const loadCartData = async () => {
     try {
       setIsLoading(true);
-      const data = await api.getCart();
-      const transformed = (data || []).map((item: any) => {
+      const raw = await api.getCart();
+      const list = Array.isArray(raw) ? raw : [];
+      const transformed = list.map((item: any) => {
         const product = item.product || {};
         const images = (() => {
           try {
             if (!product.images) return [];
-            return typeof product.images === 'string' ? JSON.parse(product.images) : product.images;
-          } catch { return typeof product.images === "string" ? [product.images] : []; }
+            return typeof product.images === "string"
+              ? JSON.parse(product.images)
+              : product.images;
+          } catch {
+            return typeof product.images === "string" ? [product.images] : [];
+          }
         })();
 
         const quantity = Number(item.quantity || 0);
@@ -63,7 +68,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getQuantityInCart = (productId: number) => {
-    const item = items.find(i => Number(i.product_id) === Number(productId));
+    const item = items.find((i) => Number(i.product_id) === Number(productId));
     return item ? Number(item.quantity) : 0;
   };
 
@@ -73,14 +78,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     }
 
-    const storeProduct = getProductById ? getProductById(product.id) : allProducts.find(p => String(p.id) === String(product.id));
+    const storeProduct = getProductById
+      ? getProductById(product.id)
+      : allProducts.find((p) => String(p.id) === String(product.id));
     const available = Number(storeProduct?.quantity ?? product.quantity ?? 0);
 
     const currentInCart = getQuantityInCart(product.id);
     const requestedTotal = currentInCart + quantity;
 
     if (requestedTotal > available) {
-      toast.error(`Only ${available} item(s) available. You've already added ${currentInCart}.`);
+      toast.error(
+        `Only ${available} item(s) available. You've already added ${currentInCart}.`,
+      );
       return false;
     }
 
@@ -107,7 +116,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const storeProduct = getProductById ? getProductById(productId) : allProducts.find(p => String(p.id) === String(productId));
+    const storeProduct = getProductById
+      ? getProductById(productId)
+      : allProducts.find((p) => String(p.id) === String(productId));
     const available = Number(storeProduct?.quantity ?? 0);
     if (quantity > available) {
       toast.error(`Only ${available} item(s) available`);
@@ -144,7 +155,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const clearCart = async () => {
     try {
       setIsLoading(true);
-      const promises = items.map(i => api.removeCartItem(i.product_id));
+      const promises = items.map((i) => api.removeCartItem(i.product_id));
       await Promise.allSettled(promises);
       await loadCartData();
     } catch (e) {
@@ -154,22 +165,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const getCartTotal = () => items.reduce((t, i) => t + (Number(i.total_price || (i.unitPrice * i.quantity)) || 0), 0);
+  const getCartTotal = () =>
+    items.reduce(
+      (t, i) => t + (Number(i.total_price || i.unitPrice * i.quantity) || 0),
+      0,
+    );
   const getCartCount = () => items.reduce((t, i) => t + (i.quantity || 0), 0);
 
   return (
-    <CartContext.Provider value={{
-      items,
-      isLoading,
-      addToCart,
-      updateQuantity,
-      removeFromCart,
-      clearCart,
-      getCartTotal,
-      getCartCount,
-      getQuantityInCart,
-      refreshCart: loadCartData
-    }}>
+    <CartContext.Provider
+      value={{
+        items,
+        isLoading,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        clearCart,
+        getCartTotal,
+        getCartCount,
+        getQuantityInCart,
+        refreshCart: loadCartData,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

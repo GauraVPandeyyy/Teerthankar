@@ -1,132 +1,107 @@
-// src/services/api.ts
 import axios from "axios";
 
-const API_BASE_URL = "https://teerthankarjewels.openlancer.in/api";
-
 const instance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
-// ============ TOKEN HANDLER =============
-let onLogout = () => {};
-
-export const registerLogoutHandler = (fn: () => void) => {
-  onLogout = fn;
-};
-
-function getToken() {
-  try {
-    return localStorage.getItem("token");
-  } catch {
-    return null;
-  }
-}
-
-// ============ INTERCEPTORS =============
-instance.interceptors.request.use((config) => {
-  const token = getToken();
-
-  if (token && config.headers) {
-    config.headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  return config;
-});
-
-
-instance.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      onLogout();
+// Attach Bearer token automatically
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(err);
-  }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
-// ============ AUTH =============
-export const login = async (email: string, password: string) => {
-  const res = await instance.post("/login", { email, password });
-  return res.data;
+/* ======================================================
+   AUTH (GOOGLE ONLY)
+====================================================== */
+
+export const googleLogin = async (googleIdToken: string) => {
+  const res = await instance.post("/auth/google/callback", {
+    token: googleIdToken,
+  });
+  return res.data; // { access_token, token_type, user }
 };
 
 export const logout = async () => {
-  try {
-    await instance.post("/api/logout");
-  } catch {}
-  localStorage.removeItem("token");
+  await instance.post("/api/logout");
 };
 
 export const getProfile = async () => {
-  const res = await instance.get("/auth/me");
+  const res = await instance.get("/profile");
+  console.log("Profile response:", res.data);
   return res.data;
 };
 
-// ============ CART (Your Backend) =============
+/* ======================================================
+   PRODUCTS & CATEGORIES  🔥 (THIS WAS MISSING)
+====================================================== */
 
-// GET all cart items
+// export const getProducts = async () => {
+//   const res = await instance.get("/api/products");
+//   return res.data;
+// };
+
+// export const getCategories = async () => {
+//   const res = await instance.get("/api/categories");
+//   return res.data;
+// };
+
+/* ======================================================
+   CART
+====================================================== */
+
 export const getCart = async () => {
   const res = await instance.get("/cart/getItems");
-  return res.data?.data || [];
+  return res.data?.data || res.data || [];
 };
 
-// ADD item
-export const addToCart = async ({
-  product_id,
-  quantity,
-  total_price,
-}: {
+export const addToCart = async (data: {
   product_id: number;
   quantity: number;
   total_price: number;
 }) => {
-  const res = await instance.post("/cart/addItem", {
-    product_id,
-    quantity,
-    total_price,
-  });
-  return res.data;
+  await instance.post("/cart/addItem", data);
 };
 
-// UPDATE item (uses PRODUCT ID)
-export const updateCartItem = async (productId: number, quantity: number) => {
-  const res = await instance.put(`/cart/updateItem/${productId}`, {
-    quantity,
-  });
-  return res.data;
+export const updateCartItem = async (
+  productId: number,
+  quantity: number
+) => {
+  await instance.put(`cart/updateItem/${productId}`, { quantity });
 };
 
-// DELETE item (uses PRODUCT ID)
 export const removeCartItem = async (productId: number) => {
-  const res = await instance.delete(`/cart/deleteItem/${productId}`);
-  return res.data;
+  await instance.delete(`/cart/deleteItem/${productId}`);
 };
 
-// =================== WISHLIST (Your Backend) ===================
+/* ======================================================
+   WISHLIST
+====================================================== */
 
-// GET wishlist items
 export const getWishlist = async () => {
   const res = await instance.get("/wishlist/getWishlist");
-  return res.data?.data || [];
+    return res.data?.data || res.data?.wishlist || res.data || [];
 };
 
-// ADD item
-export const addToWishlist = async (product_id: number) => {
-  const res = await instance.post("/wishlist/addToWishlist", { product_id });
-  return res.data;
+export const addToWishlist = async (productId: number) => {
+  await instance.post("/wishlist/addToWishlist", { product_id: productId });
 };
 
-// REMOVE item (remove by product_id)
-export const removeWishlistItem = async (product_id: number) => {
-  const res = await instance.delete(`/wishlist/removeWishlist/${product_id}`);
-  return res.data;
+export const removeWishlistItem = async (productId: number) => {
+  await instance.delete(`/wishlist/removeWishlist/${productId}`);
 };
 
-export const clearWishlist = async () => {
-  const res = await instance.delete(`/wishlist/items`);
+/* ======================================================
+   ORDERS
+====================================================== */
+
+export const getOrderHistory = async () => {
+  const res = await instance.get("/api/orders");
   return res.data;
 };
 
@@ -190,26 +165,5 @@ export const getCategories = async () => {
   return normalized;
 };
 
-// ==============================
-// ORDER APIs
-// ==============================
-export const createOrder = async (body: any) => {
-  const res = await instance.post("/orders/placeOrder", body);
-  console.log("placeOrder body : ", body);
-  console.log("placeOrder res.data : ", res.data);
-  return res.data;
-};
-
-export const getOrderHistory = async () => {
-  const res = await instance.get("/orders/myOrders");
-    console.log("myOrders data : ", res.data);
-  return res.data;
-};
-
-export const getOrderDetails = async (order_id: string) => {
-  const res = await instance.get(`/orders/details/${order_id}`);
-    console.log("getOrderDetails : ", res.data);
-  return res.data;
-};
 
 export default instance;

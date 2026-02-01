@@ -25,9 +25,10 @@ export const WishlistProvider = ({ children }) => {
   const loadWishlist = async () => {
     try {
       setLoading(true);
-      const data = await api.getWishlist();
+      const raw = await api.getWishlist();
+      const list = Array.isArray(raw) ? raw : [];
 
-      const transformed = data.map((w: any) => ({
+      const transformed = list.map((w: any) => ({
         wishlist_id: w.id,
         product_id: w.product_id,
         name: w.product?.name || "",

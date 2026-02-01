@@ -38,6 +38,7 @@ const App = () => (
           <ProductProvider>
             <CartProvider>
               <WishlistProvider>
+                {" "}
                 <div className="min-h-screen flex flex-col overflow-hidden">
                   <Header />
                   <main className="flex-1 pe-0">

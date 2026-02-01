@@ -28,7 +28,8 @@ const Profile = () => {
     navigate('/');
     return null;
   }
-
+console.log("user", user);
+console.log("profile data", api.getProfile())
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');

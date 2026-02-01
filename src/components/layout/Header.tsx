@@ -39,6 +39,14 @@ const Header = () => {
   const { categories } = useProducts();
   const navigate = useNavigate();
 
+
+// const location = useLocation();
+const openLogin = () => {
+  sessionStorage.setItem("postLoginRedirect", location.pathname);
+  setIsLoginOpen(true);
+};
+
+
   // 1. Scroll & Visibility Logic
   useEffect(() => {
     const controlHeader = () => {
@@ -90,7 +98,7 @@ const Header = () => {
   // Handlers
   const handleCartClick = () => {
     if (!isAuthenticated) {
-      setIsLoginOpen(true);
+      openLogin();
       toast.info("Please login to view your cart");
       return;
     }
@@ -99,7 +107,7 @@ const Header = () => {
 
   const handleWishlistClick = () => {
     if (!isAuthenticated) {
-      setIsLoginOpen(true);
+      openLogin();
       toast.info("Please login to view your wishlist");
       return;
     }
@@ -341,7 +349,7 @@ const Header = () => {
                   onClick={() =>
                     isAuthenticated
                       ? navigate("/profile")
-                      : setIsLoginOpen(true)
+                      : openLogin()
                   }
                   className={cn(
                     "rounded-full transition-colors",
@@ -470,7 +478,7 @@ const Header = () => {
                         to={link.path}
                         onClick={() => {
                           setIsMenuOpen(false);
-                          setIsLoginOpen(true);
+                          openLogin();
                         }}
                         className="text-3xl font-serif font-medium text-slate-900 hover:text-amber-600 transition-colors block"
                       >
@@ -528,7 +536,7 @@ const Header = () => {
                   className="w-full bg-slate-900 text-white py-6 text-lg"
                   onClick={() => {
                     setIsMenuOpen(false);
-                    setIsLoginOpen(true);
+                    openLogin();
                   }}
                 >
                   Login / Sign Up

@@ -1,8 +1,6 @@
-// src/components/auth/LoginModal.tsx
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +8,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { toast } from "sonner";
+import { Sparkles } from "lucide-react"; // Ek premium icon ke liye
 
 const LoginModal = ({
   isOpen,
@@ -18,80 +17,75 @@ const LoginModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { login } = useAuth();
+  const { googleLogin } = useAuth();
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      toast.error("Please enter all fields");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await login(email, password);
-      toast.success("Login successful!");
-      setEmail("");
-      setPassword("");
-      onClose();
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Login failed. Try again.";
-      toast.error(msg);
-    } finally {
-      setIsLoading(false);
+  const redirectAfterLogin = () => {
+    const redirect = sessionStorage.getItem("postLoginRedirect");
+    if (redirect) {
+      navigate(redirect);
+      sessionStorage.removeItem("postLoginRedirect");
+    } else {
+        navigate("/dashboard"); // Default redirect agar kuch na ho toh
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-serif text-center">
-            Welcome Back!
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[400px] border-none bg-white/95 backdrop-blur-md p-0 overflow-hidden rounded-2xl shadow-2xl">
+        {/* Decorative Top Bar */}
+        <div className="h-2 bg-gradient-to-r from-amber-200 via-yellow-500 to-amber-200" />
+        
+        <div className="p-8">
+          <DialogHeader className="space-y-3">
+            <div className="mx-auto bg-amber-50 w-12 h-12 rounded-full flex items-center justify-center mb-2">
+              <Sparkles className="text-amber-600 w-6 h-6" />
+            </div>
+            <DialogTitle className="text-center text-3xl font-serif text-slate-800 tracking-tight">
+              Welcome Back
+            </DialogTitle>
+            <p className="text-center text-slate-500 text-sm font-light">
+              Discover timeless elegance. Sign in to access your curated jewelry collection.
+            </p>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-5">
-          <div>
-            <label>Email</label>
-            <Input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="text-base"
-              required
-            />
+          <div className="mt-8 space-y-4">
+            {/* Google Login Container */}
+            <div className="flex justify-center flex-col items-center gap-4">
+              <div className="w-full border-t border-slate-100 relative mb-2">
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[10px] uppercase tracking-widest text-slate-400">
+                  Secure Access
+                </span>
+              </div>
+              
+              <div className="w-full flex justify-center py-2 transition-transform hover:scale-[1.02] active:scale-95">
+                <GoogleLogin
+                  onSuccess={async (cred) => {
+                    try {
+                      await googleLogin(cred.credential!);
+                      toast.success("Welcome to our collection!");
+                      onClose();
+                      redirectAfterLogin();
+                    } catch {
+                      toast.error("Authentication failed. Please try again.");
+                    }
+                  }}
+                  shape="pill"
+                  theme="outline"
+                  size="large"
+                  text="continue_with"
+                  width="300"
+                  onError={() => toast.error("Google login failed")}
+                />
+              </div>
+            </div>
+
+            <p className="text-[11px] text-center text-slate-400 mt-6 leading-relaxed">
+              By continuing, you agree to our <br />
+              <span className="underline cursor-pointer hover:text-amber-600">Terms of Service</span> and <span className="underline cursor-pointer hover:text-amber-600">Privacy Policy</span>.
+            </p>
           </div>
-
-          <div>
-            <label>Password</label>
-            <Input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="text-base"
-              required
-            />
-          </div>
-
-          <Button className="w-full bg-gradient-gold" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
-          </Button>
-
-          <p className="text-xs text-center text-muted-foreground">
-            We'll implement OTP login soon.
-          </p>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
