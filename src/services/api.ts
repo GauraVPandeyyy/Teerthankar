@@ -28,28 +28,14 @@ export const googleLogin = async (googleIdToken: string) => {
 };
 
 export const logout = async () => {
-  await instance.post("/api/logout");
+  await instance.post("/logout");
 };
 
 export const getProfile = async () => {
-  const res = await instance.get("/profile");
+  const res = await instance.get("/auth/me");
   console.log("Profile response:", res.data);
   return res.data;
 };
-
-/* ======================================================
-   PRODUCTS & CATEGORIES  🔥 (THIS WAS MISSING)
-====================================================== */
-
-// export const getProducts = async () => {
-//   const res = await instance.get("/api/products");
-//   return res.data;
-// };
-
-// export const getCategories = async () => {
-//   const res = await instance.get("/api/categories");
-//   return res.data;
-// };
 
 /* ======================================================
    CART
@@ -101,7 +87,19 @@ export const removeWishlistItem = async (productId: number) => {
 ====================================================== */
 
 export const getOrderHistory = async () => {
-  const res = await instance.get("/api/orders");
+  const res = await instance.get("orders/myOrders");
+  return res.data;
+};
+
+export const getOrderDetails = async (order_id: string) => {
+  const res = await instance.get(`/orders/details/${order_id}`);
+    console.log("getOrderDetails : ", res.data);
+  return res.data;
+};
+
+
+export const createOrder = async (payload: any) => {
+  const res = await instance.post("/orders/placeOrder", payload);
   return res.data;
 };
 

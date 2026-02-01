@@ -12,35 +12,35 @@ import * as api from '../services/api';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout, updateProfile } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    mobile: user?.mobile || ''
-  });
+  // const [isEditing, setIsEditing] = useState(false);
+  // const [formData, setFormData] = useState({
+  //   name: user?.name || '',
+  //   email: user?.email || '',
+  //   mobile: user?.mobile || ''
+  // });
 
   if (!isAuthenticated) {
     navigate('/');
     return null;
   }
 console.log("user", user);
-console.log("profile data", api.getProfile())
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/');
-  };
+// console.log("profile data", api.getProfile())
+  // const handleLogout = () => {
+  //   logout();
+  //   toast.success('Logged out successfully');
+  //   navigate('/');
+  // };
 
-  const handleSaveProfile = () => {
-    updateProfile(formData);
-    setIsEditing(false);
-    toast.success('Profile updated successfully');
-  };
+  // const handleSaveProfile = () => {
+  //   updateProfile(formData);
+  //   setIsEditing(false);
+  //   toast.success('Profile updated successfully');
+  // };
 
   const loadOrders = async () => {
     try {
@@ -89,9 +89,9 @@ console.log("profile data", api.getProfile())
                  <TabsTrigger value="orders" className="rounded-full px-6 data-[state=active]:bg-slate-900 data-[state=active]:text-white">
                    <Package className="w-4 h-4 mr-2" /> My Orders
                  </TabsTrigger>
-                 <TabsTrigger value="settings" className="rounded-full px-6 data-[state=active]:bg-slate-900 data-[state=active]:text-white">
+                 {/* <TabsTrigger value="settings" className="rounded-full px-6 data-[state=active]:bg-slate-900 data-[state=active]:text-white">
                    <Settings className="w-4 h-4 mr-2" /> Settings
-                 </TabsTrigger>
+                 </TabsTrigger> */}
                </TabsList>
 
                {/* ORDERS TAB */}
@@ -131,7 +131,7 @@ console.log("profile data", api.getProfile())
                </TabsContent>
 
                {/* SETTINGS TAB */}
-               <TabsContent value="settings">
+               {/* <TabsContent value="settings">
                  <div className="bg-white p-8 rounded-[2rem] border border-slate-100">
                    <div className="flex justify-between items-center mb-6">
                      <h2 className="font-serif text-2xl font-bold text-slate-900">Profile Details</h2>
@@ -174,7 +174,7 @@ console.log("profile data", api.getProfile())
                      </div>
                    </div>
                  </div>
-               </TabsContent>
+               </TabsContent> */}
              </Tabs>
           </div>
         </div>

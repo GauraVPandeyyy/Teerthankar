@@ -142,7 +142,7 @@ const OrderDetails = () => {
                 <MapPin className="w-5 h-5 text-amber-600" /> Shipping To
               </h2>
               <div className="text-slate-600 leading-relaxed">
-                <p className="font-medium text-slate-900 mb-2">User Name</p>
+                <p className="font-medium text-slate-900 mb-2">User Name : {order.fullName}</p>
                 <p>{order.address_line1}</p>
                 {order.address_line2 && <p>{order.address_line2}</p>}
                 <p>{order.city}, {order.state}</p>
