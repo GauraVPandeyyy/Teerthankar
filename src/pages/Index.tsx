@@ -590,7 +590,7 @@ const Index: React.FC = () => {
       <section className="py-12 md:py-24 bg-slate-900 text-white relative h-full w-full">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-amber-900/20 to-transparent pointer-events-none" />
 
-        <div className="px-2 md:px-6 w-full grid md:grid-cols-2 gap-16 items-center">
+        <div className="container px-2 md:px-6 w-full grid md:grid-cols-2 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -602,7 +602,7 @@ const Index: React.FC = () => {
             <img
               src={Logo}
               alt="Teerthankar Logo"
-              className="w-14 h-14 object-contain mb-4 shadow-glow"
+              className="w-14 h-14 md:w-20 md:h-20 object-contain mb-4 shadow-glow"
             />
 
             {/* </div> */}

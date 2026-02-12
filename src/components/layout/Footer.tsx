@@ -152,11 +152,11 @@ const Footer = () => {
                 {/* </div> */}
                 <div>
                   <h3 className="font-serif text-2xl font-bold">
-                    <span className="bg-gradient-to-r from-amber-300 to-amber-200 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-amber-300 to-amber-400 bg-clip-text text-transparent">
                       Teerthankar
                     </span>
                   </h3>
-                  <p className="text-slate-400 text-sm -mt-1">Premium Jewels</p>
+                  <p className="bg-gradient-to-r from-amber-300 to-amber-400 bg-clip-text text-transparent text-sm -mt-1">Jewels</p>
                 </div>
               </div>
 

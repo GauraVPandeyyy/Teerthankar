@@ -9,6 +9,7 @@ import {
 } from "../ui/dialog";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react"; // Ek premium icon ke liye
+import Logo from "../../assets/logo.png"; // Apne logo ka path yahan daalein
 
 const LoginModal = ({
   isOpen,
@@ -38,8 +39,13 @@ const LoginModal = ({
         
         <div className="p-8">
           <DialogHeader className="space-y-3">
-            <div className="mx-auto bg-amber-50 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-              <Sparkles className="text-amber-600 w-6 h-6" />
+            <div className="mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-2">
+              {/* <Sparkles className="text-amber-600 w-6 h-6" /> */}
+              <img
+              src={Logo}
+              alt="Teerthankar Logo"
+              className="w-14 h-14 object-contain mb-4 shadow-glow"
+            />
             </div>
             <DialogTitle className="text-center text-3xl font-serif text-slate-800 tracking-tight">
               Welcome Back

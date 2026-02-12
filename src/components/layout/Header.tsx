@@ -228,8 +228,8 @@ const openLogin = () => {
               <div className="hidden lg:block">
                 <h1
                   className={cn(
-                    "font-serif text-2xl font-bold tracking-tight leading-none transition-colors duration-300",
-                    isScrolled ? "text-slate-900" : "text-white"
+                    "font-serif text-2xl font-bold tracking-tight leading-none transition-colors duration-300 bg-gradient-to-r from-amber-200 to-amber-400 bg-clip-text text-transparent",
+                    isScrolled ? "bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent" : "bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent"
                   )}
                 >
                   Teerthankar
@@ -237,10 +237,10 @@ const openLogin = () => {
                 <span
                   className={cn(
                     "text-[10px] uppercase tracking-[0.2em] font-medium transition-colors duration-300",
-                    isScrolled ? "text-amber-700" : "text-white/80"
+                    isScrolled ? "bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent" : "bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent"
                   )}
                 >
-                  Artisan Jewels
+                  Jewels
                 </span>
               </div>
             </Link>
@@ -435,10 +435,13 @@ const openLogin = () => {
             <div className="flex items-center justify-between p-6 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <img src={Logo} alt="Logo" className="w-8 h-8" />
-                <span className="font-serif text-lg font-bold text-slate-900">
+                <div className="flex flex-col ml-1">
+                <span className="font-serif text-xl font-bold bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent">
                   Teerthankar
                 </span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-medium transition-colors duration-300 bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent">Jewels</span>
               </div>
+              </div>          
               <Button
                 variant="ghost"
                 size="icon"
