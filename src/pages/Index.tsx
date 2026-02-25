@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -25,55 +25,21 @@ import { cn } from "@/lib/utils";
 import Logo from "../assets/logo.png";
 
 const Index: React.FC = () => {
-  const { categories, getFeaturedProducts, isLoading, isError, refetchData } =
-    useProducts();
+  const { categories, getFeaturedProducts, isLoading, isError, refetchData } = useProducts();
 
-  const featuredProducts = getFeaturedProducts();
-  const featuredCategories = categories.filter((cat) => cat.featured);
+  // Memozied Products
+  const featuredProducts = useMemo(() => {
+    return getFeaturedProducts();
+  }, [getFeaturedProducts]);
+
+  // Memoized Categories
+  const featuredCategories = useMemo(() => {
+    return categories.filter((cat) => cat.featured);
+  }, [categories]);
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Premium Hero Carousel Data
-  const heroSlides = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&q=80",
-      title: "Elegance Redefined",
-      subtitle:
-        "Discover our exquisite collection of artificial jewelry that brings luxury within reach",
-      primaryButton: "Shop Now",
-      primaryLink: "/shop",
-      secondaryButton: "Wedding Collection",
-      secondaryLink: "/category/wedding-collection",
-      overlay: "from-black/70 to-black/30",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1920&q=80",
-      title: "Timeless Beauty",
-      subtitle:
-        "Crafted perfection for every occasion, from casual elegance to grand celebrations",
-      primaryButton: "New Arrivals",
-      primaryLink: "/shop?sort=newest",
-      secondaryButton: "Necklaces",
-      secondaryLink: "/category/necklaces",
-      overlay: "from-purple-900/70 to-pink-900/30",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1920&q=80",
-      title: "Sparkling Moments",
-      subtitle:
-        "Where every piece tells a story of glamour, sophistication, and unforgettable style",
-      primaryButton: "Featured Pieces",
-      primaryLink: "/shop?filter=featured",
-      secondaryButton: "Earrings",
-      secondaryLink: "/category/earrings",
-      overlay: "from-amber-900/70 to-rose-900/30",
-    },
-  ];
 
   console.log("Featured Products:", featuredProducts);
   // Auto-play carousel
@@ -93,34 +59,12 @@ const Index: React.FC = () => {
 
   const prevSlide = () => {
     setCurrentSlide(
-      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length,
     );
   };
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
-  };
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
   };
 
   // Handle loading and error states
@@ -703,7 +647,7 @@ const Index: React.FC = () => {
                       key={i}
                       className={cn(
                         "w-4 h-4",
-                        i < review.rating ? "fill-current" : "text-slate-200"
+                        i < review.rating ? "fill-current" : "text-slate-200",
                       )}
                     />
                   ))}
@@ -875,3 +819,66 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
+// Premium Hero Carousel Data
+const heroSlides = [
+  {
+    image:
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1920&q=80",
+    title: "Elegance Redefined",
+    subtitle:
+      "Discover our exquisite collection of artificial jewelry that brings luxury within reach",
+    primaryButton: "Shop Now",
+    primaryLink: "/shop",
+    secondaryButton: "Wedding Collection",
+    secondaryLink: "/category/wedding-collection",
+    overlay: "from-black/70 to-black/30",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1920&q=80",
+    title: "Timeless Beauty",
+    subtitle:
+      "Crafted perfection for every occasion, from casual elegance to grand celebrations",
+    primaryButton: "New Arrivals",
+    primaryLink: "/shop?sort=newest",
+    secondaryButton: "Necklaces",
+    secondaryLink: "/category/necklaces",
+    overlay: "from-purple-900/70 to-pink-900/30",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1920&q=80",
+    title: "Sparkling Moments",
+    subtitle:
+      "Where every piece tells a story of glamour, sophistication, and unforgettable style",
+    primaryButton: "Featured Pieces",
+    primaryLink: "/shop?filter=featured",
+    secondaryButton: "Earrings",
+    secondaryLink: "/category/earrings",
+    overlay: "from-amber-900/70 to-rose-900/30",
+  },
+];
+
+// Animation Variants
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };

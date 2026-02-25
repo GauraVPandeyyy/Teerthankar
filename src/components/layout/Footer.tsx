@@ -307,7 +307,7 @@ const Footer = () => {
               .
             </p>
 
-            <div className="flex items-center gap-6 text-sm text-slate-400">
+            {/* <div className="flex items-center gap-6 text-sm text-slate-400">
               {policyLinks.map((link) => (
                 <Link
                   key={link.key}
@@ -317,7 +317,7 @@ const Footer = () => {
                   {link.name}
                 </Link>
               ))}
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </motion.footer>

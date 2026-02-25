@@ -8,17 +8,31 @@ import { useProducts } from '../contexts/ProductContext';
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { cn } from '../lib/utils';
+import LoginModal from '@/components/auth/LoginModal';
+import { useAuth } from '@/contexts/AuthContext';
+import SEO from '@/components/SEO';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { getProductById, allProducts } = useProducts();
   const { addToCart, getQuantityInCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const product = getProductById(id);
   const [selectedImage, setSelectedImage] = useState(0);
   const initialQty = 1;
   const [quantity, setQuantity] = useState(initialQty);
+
+  const { isAuthenticated } = useAuth();
+  
+  const guarded = (fn) => (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) return setShowLoginModal(true);
+    fn();
+  };
+
 
   if (!product) {
     return (
@@ -53,6 +67,12 @@ const ProductDetail = () => {
   };
 
   return (
+    <>
+    <SEO 
+      title={product.name} 
+      description={product.description.substring(0, 160)} // SEO description 160 chars tak best hota hai
+      image={product.images[0]}
+    />
     <div className="min-h-screen bg-background mt-[80px]">
       <div className="container mx-auto px-2 py-6">
         <Link to="/shop"><Button variant="ghost" className="mb-6"><ArrowLeft className="w-4 h-4 mr-2" />Back to Shop</Button></Link>
@@ -108,12 +128,12 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex gap-4">
-              <Button size="lg" className="flex-1 bg-gradient-gold hover:opacity-90" onClick={handleAddToCart} disabled={stockAvailable <= 0 || maxSelectable <= 0}>
+              <Button size="lg" className="flex-1 bg-gradient-gold hover:opacity-90" onClick={guarded(handleAddToCart)} disabled={stockAvailable <= 0 || maxSelectable <= 0}>
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 {stockAvailable ? 'Add to Cart' : 'Out of Stock'}
               </Button>
 
-              <Button size="lg" variant="outline" onClick={handleWishlistToggle}>
+              <Button size="lg" variant="outline" onClick={guarded(handleWishlistToggle)}>
                 <Heart className={cn("w-5 h-5", inWishlist && "fill-current text-destructive")} />
               </Button>
             </div>
@@ -130,7 +150,12 @@ const ProductDetail = () => {
           </section>
         )}
       </div>
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
+    </>
   );
 };
 

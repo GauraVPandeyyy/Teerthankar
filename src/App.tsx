@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,11 +8,11 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
 import { ProductProvider } from "./contexts/ProductContext";
-import Index from "./pages/Index";
-import Shop from "./pages/Shop";
-import ProductDetail from "./pages/ProductDetail";
+const Index = React.lazy(() => import("./pages/Index"));
+const Shop = React.lazy(() => import("./pages/Shop"));
+const ProductDetail = React.lazy(() => import("./pages/ProductDetail"));
+const Cart = React.lazy(() => import("./pages/Cart"));
 import CategoryPage from "./pages/CategoryPage";
-import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
@@ -39,9 +40,10 @@ const App = () => (
             <CartProvider>
               <WishlistProvider>
                 {" "}
-                <div className="min-h-screen flex flex-col overflow-hidden">
+                <div className="min-h-screen flex flex-col overflow-hidden selection:bg-rose-100 selection:text-rose-900">
                   <Header />
-                  <main className="flex-1 pe-0">
+                  <main className="flex-grow">
+                    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center">Loading...</div>}>
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/shop" element={<Shop />} />
@@ -109,6 +111,7 @@ const App = () => (
                       <Route path="/search" element={<Search />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
+                    </Suspense>
                   </main>
                   <Footer />
                 </div>

@@ -103,6 +103,15 @@ export const createOrder = async (payload: any) => {
   return res.data;
 };
 
+export const verifyPayment = async (payload: {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}) => {
+  const res = await instance.post("/verify-payment", payload);
+  return res.data;
+};
+
 // =================== PUBLIC APIs ===================
 export const getProducts = async () => {
   // backend public URL: /public/api/products

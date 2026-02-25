@@ -15,7 +15,7 @@ const ProductCard = ({ product }) => {
   const { addToCart, getQuantityInCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { isAuthenticated } = useAuth();
-
+  
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
